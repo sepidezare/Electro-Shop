@@ -1,10 +1,10 @@
 // src/components/Products/ReviewsSummary.tsx
 "use client";
 
-import { Review } from "@/types/product";
+import { ProductReview } from "@/types/product";
 
 interface ReviewsSummaryProps {
-  reviews: Review[];
+  reviews: ProductReview[];
   averageRating: number;
   onAddReview: () => void;
 }
