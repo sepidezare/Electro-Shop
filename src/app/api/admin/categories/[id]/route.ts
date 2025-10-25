@@ -19,19 +19,17 @@ interface UpdateData {
   slug?: string;
 }
 
-interface Params {
-  params: {
-    id: string;
-  }
-}
-
 // GET single category
-export async function GET(request: Request, { params }: Params) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params;
     const client = await clientPromise;
     const db = client.db();
 
-    if (!ObjectId.isValid(params.id)) {
+    if (!ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: 'Invalid category ID' },
         { status: 400 }
@@ -39,7 +37,7 @@ export async function GET(request: Request, { params }: Params) {
     }
 
     const category = await db.collection('categories').findOne({ 
-      _id: new ObjectId(params.id) 
+      _id: new ObjectId(id) 
     });
 
     if (!category) {
@@ -55,7 +53,7 @@ export async function GET(request: Request, { params }: Params) {
       description: category.description,
       parentId: category.parentId ? category.parentId.toString() : null,
       slug: category.slug,
-      image: category.image || undefined, // Add image field
+      image: category.image || undefined,
       createdAt: category.createdAt.toISOString(),
       updatedAt: category.updatedAt.toISOString()
     };
@@ -71,12 +69,16 @@ export async function GET(request: Request, { params }: Params) {
 }
 
 // PUT - Update category
-export async function PUT(request: Request, { params }: Params) {
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params;
     const client = await clientPromise;
     const db = client.db();
 
-    if (!ObjectId.isValid(params.id)) {
+    if (!ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: 'Invalid category ID' },
         { status: 400 }
@@ -88,7 +90,7 @@ export async function PUT(request: Request, { params }: Params) {
 
     // Check if category exists
     const existingCategory = await db.collection('categories').findOne({ 
-      _id: new ObjectId(params.id) 
+      _id: new ObjectId(id) 
     });
 
     if (!existingCategory) {
@@ -127,7 +129,7 @@ export async function PUT(request: Request, { params }: Params) {
       // Check if new slug already exists (excluding current category)
       const slugExists = await db.collection('categories').findOne({ 
         slug, 
-        _id: { $ne: new ObjectId(params.id) } 
+        _id: { $ne: new ObjectId(id) } 
       });
       
       if (slugExists) {
@@ -145,11 +147,11 @@ export async function PUT(request: Request, { params }: Params) {
     if (name !== undefined) updateData.name = name.trim();
     if (description !== undefined) updateData.description = description.trim();
     if (parentId !== undefined) updateData.parentId = parentId ? new ObjectId(parentId) : null;
-    if (image !== undefined) updateData.image = image; // Add image field
+    if (image !== undefined) updateData.image = image;
     if (slug !== existingCategory.slug) updateData.slug = slug;
 
     const result = await db.collection('categories').updateOne(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(id) },
       { $set: updateData }
     );
 
@@ -174,12 +176,16 @@ export async function PUT(request: Request, { params }: Params) {
 }
 
 // DELETE - Delete category
-export async function DELETE(request: Request, { params }: Params) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await params;
     const client = await clientPromise;
     const db = client.db();
 
-    if (!ObjectId.isValid(params.id)) {
+    if (!ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: 'Invalid category ID' },
         { status: 400 }
@@ -188,7 +194,7 @@ export async function DELETE(request: Request, { params }: Params) {
 
     // Check if category has children
     const childCategories = await db.collection('categories').find({
-      parentId: new ObjectId(params.id)
+      parentId: new ObjectId(id)
     }).toArray();
 
     if (childCategories.length > 0) {
@@ -199,7 +205,7 @@ export async function DELETE(request: Request, { params }: Params) {
     }
 
     const result = await db.collection('categories').deleteOne({
-      _id: new ObjectId(params.id)
+      _id: new ObjectId(id)
     });
 
     if (result.deletedCount === 0) {
