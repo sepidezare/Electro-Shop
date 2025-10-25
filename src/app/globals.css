@@ -1,8 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;700&display=swap');
 @import "tailwindcss";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+}
+
+/* Set default font to system fonts */
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.font-jamjuree {
+  font-family: 'Bai Jamjuree', sans-serif;
+}
+
+.font-jamjuree-regular {
+  font-family: 'Bai Jamjuree', sans-serif;
+  font-weight: 400;
+}
+
+.font-jamjuree-bold {
+  font-family: 'Bai Jamjuree', sans-serif;
+  font-weight: 700;
 }
 
 @theme inline {
@@ -19,8 +39,71 @@
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+
+/* ////// */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* /// */
+/* styles/globals.css or your CSS file */
+.fade-in {
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Ensure proper z-index stacking */
+/* .relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.z-50 {
+  z-index: 50;
+} */
+
+@keyframes fadeInX {
+  from {
+    opacity: 0;
+    transform: translateX(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeInX {
+  animation: fadeInX 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }

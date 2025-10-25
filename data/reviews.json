@@ -1,0 +1,46 @@
+[
+  {
+    "id": "1761290098864",
+    "username": "fdg",
+    "email": "zare.sepide90@gmail.com",
+    "rating": 3,
+    "comment": "fdg",
+    "createdAt": "2025-10-24T07:14:58.864Z",
+    "verified": true,
+    "helpful": 0,
+    "productSlug": "nnnnnnnn"
+  },
+  {
+    "id": "1761290138797",
+    "username": "dsf",
+    "email": "zare.sepide90@gmail.com",
+    "rating": 3,
+    "comment": "aaaa",
+    "createdAt": "2025-10-24T07:15:38.798Z",
+    "verified": true,
+    "helpful": 0,
+    "productSlug": "nnnnnnnn"
+  },
+  {
+    "id": "1761290217360",
+    "username": "fdf",
+    "email": "zare.sepide90@gmail.com",
+    "rating": 5,
+    "comment": "bbbbbb",
+    "createdAt": "2025-10-24T07:16:57.360Z",
+    "verified": true,
+    "helpful": 0,
+    "productSlug": "nnnnnnnn"
+  },
+  {
+    "id": "1761293320750",
+    "username": "df",
+    "email": "zare.sepide90@gmail.com",
+    "rating": 3,
+    "comment": "dg",
+    "createdAt": "2025-10-24T08:08:40.750Z",
+    "verified": true,
+    "helpful": 0,
+    "productSlug": "amoled-music-weather-fashion-smart-watch"
+  }
+]
