@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const client = await clientPromise;
@@ -12,8 +12,9 @@ export async function GET(
     const productsCollection = db.collection('products');
     
     // Find the current product by slug
+    const { slug } = await params;
     const currentProduct = await productsCollection.findOne({
-      slug: params.slug
+      slug: slug
     });
 
     if (!currentProduct) {
@@ -41,7 +42,7 @@ export async function GET(
 
     const query = {
       $and: [
-        { slug: { $ne: params.slug } },
+        { slug: { $ne: slug } },
         { inStock: true },
         {
           $or: [
