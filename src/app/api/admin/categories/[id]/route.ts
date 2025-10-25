@@ -10,6 +10,15 @@ interface UpdateCategoryData {
   image?: string;
 }
 
+interface UpdateData {
+  updatedAt: Date;
+  name?: string;
+  description?: string;
+  parentId?: ObjectId | null;
+  image?: string;
+  slug?: string;
+}
+
 interface Params {
   params: {
     id: string;
@@ -129,7 +138,7 @@ export async function PUT(request: Request, { params }: Params) {
       }
     }
 
-    const updateData: any = {
+    const updateData: UpdateData = {
       updatedAt: new Date()
     };
 
