@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../lib/mongoDb';
 import { ObjectId } from 'mongodb';
-import { writeFile, mkdir, unlink } from 'fs/promises';
+import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { Product, ProductVariant } from '../../../../types/product';
 
@@ -67,40 +67,27 @@ function validateVariantAttributes(
   if (!Array.isArray(variants)) {
     return false;
   }
-  
-  const productAttrNames = new Set(productAttributes.map((attr) => attr.name));
-  
+
   return variants.every((variant) => {
     const v = variant as ProductVariant;
     
-    if (!v || typeof v !== 'object') return false;
-    if (typeof v.name !== 'string' || v.name.trim() === '') return false;
-    if (typeof v.price !== 'number' || v.price <= 0) return false;
-    if (typeof v.inStock !== 'boolean') return false;
-    if (typeof v.stockQuantity !== 'number' || v.stockQuantity < 0) return false;
-    if (!Array.isArray(v.specifications)) return false;
-    if (!Array.isArray(v.attributes)) return false;
+    // Validate attributes structure
+    const attributesValid = Array.isArray(v.attributes) && v.attributes.every((attr: unknown) => {
+      const attribute = attr as VariantAttribute;
+      return typeof attribute === 'object' &&
+        attribute !== null &&
+        typeof attribute.name === 'string' &&
+        attribute.name.trim() !== '' &&
+        typeof attribute.value === 'string' &&
+        attribute.value.trim() !== '';
+    });
 
-    const variantAttrNames = new Set(v.attributes.map((attr: unknown) => (attr as VariantAttribute).name));
-    
-    return (
-      v.attributes.every(
-        (attr: unknown) =>
-          typeof attr === 'object' &&
-          attr !== null &&
-          typeof (attr as VariantAttribute).name === 'string' &&
-          (attr as VariantAttribute).name.trim() !== '' &&
-          typeof (attr as VariantAttribute).value === 'string' &&
-          (attr as VariantAttribute).value.trim() !== ''
-      ) &&
-      productAttrNames.size === variantAttrNames.size &&
-      [...productAttrNames].every((name) => variantAttrNames.has(name))
-    );
+    return attributesValid;
   });
 }
 
-// GET all products with category names
-export async function GET() {
+// GET all products
+export async function GET(request: Request) {
   try {
     const client = await clientPromise;
     const db = client.db();
@@ -111,23 +98,13 @@ export async function GET() {
       .sort({ createdAt: -1 })
       .toArray();
 
-    const categories = await db.collection('categories').find({}).toArray();
-
-    const categoryMap = new Map();
-    categories.forEach((cat) => {
-      categoryMap.set(cat._id.toString(), cat.name);
-    });
-
-    const serializedProducts = products.map((product) => ({
+    const serializedProducts = products.map(product => ({
       _id: product._id.toString(),
       name: product.name,
       description: product.description,
       price: product.price,
       discountPrice: product.discountPrice || 0,
       categories: product.categories || [],
-      categoryNames: (product.categories || []).map((catId: string) =>
-        categoryMap.get(catId) || 'Unknown Category'
-      ),
       image: product.image,
       inStock: product.inStock,
       rating: product.rating || 0,
@@ -152,6 +129,7 @@ export async function GET() {
       })),
       todayOffer: product.todayOffer || false,
       featuredProduct: product.featuredProduct || false,
+      slug: product.slug || '',
       createdAt: product.createdAt.toISOString(),
       updatedAt: product.updatedAt.toISOString(),
     }));
@@ -159,7 +137,10 @@ export async function GET() {
     return NextResponse.json(serializedProducts);
   } catch (error) {
     console.error('Error fetching products:', error);
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch products' },
+      { status: 500 }
+    );
   }
 }
 
@@ -206,16 +187,6 @@ export async function POST(request: Request) {
     const specifications = specificationsJson ? JSON.parse(specificationsJson) : [];
     let variants = variantsJson ? JSON.parse(variantsJson) : [];
 
-    console.log('📝 Creating product with data:', {
-      name,
-      description,
-      price,
-      discountPrice,
-      categories,
-      type,
-      variants,
-    });
-
     // Validate required fields
     if (!name || !description || categories.length === 0) {
       return NextResponse.json(
@@ -253,13 +224,32 @@ export async function POST(request: Request) {
       if (!validateVariantAttributes(variants, attributes)) {
         return NextResponse.json({ error: 'Invalid variant attributes format' }, { status: 400 });
       }
-      // Assign proper ObjectIds to variations
-      variants = variants.map((variant: unknown) => ({
-        ...(variant as ProductVariant),
-        _id: new ObjectId().toString(),
-      }));
+      
+      // Process variant images
+      variants = await Promise.all(
+        variants.map(async (variant: unknown, index: number) => {
+          const v = variant as ProductVariant;
+          const variantImageFile = formData.get(`variantImage-${index}`) as File;
+          let variantImageUrl = v.image;
+
+          if (variantImageFile && variantImageFile.size > 0) {
+            const validationError = validateFile(variantImageFile, 'image');
+            if (validationError) {
+              console.error(`Variant ${index} image validation error:`, validationError);
+            } else {
+              variantImageUrl = await saveUploadedFile(variantImageFile);
+            }
+          }
+
+          return {
+            ...v,
+            _id: new ObjectId().toString(),
+            image: variantImageUrl,
+          };
+        })
+      );
     } else {
-      variants = []; // Clear variants for simple products
+      variants = [];
     }
 
     // Validate discount price
@@ -280,7 +270,6 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: `Main image: ${validationError}` }, { status: 400 });
       }
       mainImageUrl = await saveUploadedFile(mainImageFile);
-      console.log('✅ Main image saved:', mainImageUrl);
     }
 
     if (!mainImageUrl) {
@@ -297,18 +286,14 @@ export async function POST(request: Request) {
       mimeType?: string;
     }> = [];
 
-    console.log('📸 Media files to process:', mediaFiles.length);
-
     for (const mediaFile of mediaFiles) {
       if (mediaFile && mediaFile.size > 0) {
         const fileType = mediaFile.type.startsWith('image/') ? 'image' : mediaFile.type.startsWith('video/') ? 'video' : null;
         if (!fileType) {
-          console.warn(`Skipping invalid file type: ${mediaFile.type}`);
           continue;
         }
         const validationError = validateFile(mediaFile, fileType);
         if (validationError) {
-          console.warn(`Skipping invalid media file: ${validationError}`);
           continue;
         }
         const mediaUrl = await saveUploadedFile(mediaFile);
@@ -319,7 +304,6 @@ export async function POST(request: Request) {
           size: mediaFile.size,
           mimeType: mediaFile.type,
         });
-        console.log('✅ Additional media saved:', { url: mediaUrl, type: fileType });
       }
     }
 
@@ -359,12 +343,7 @@ export async function POST(request: Request) {
       updatedAt: new Date().toISOString(),
     };
 
-    console.log('💾 Saving to database:', productData);
-
     const result = await db.collection('products').insertOne(productData);
-
-    console.log('✅ Product created with ID:', result.insertedId);
-
     return NextResponse.json({
       success: true,
       insertedId: result.insertedId.toString(),
@@ -377,261 +356,6 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error creating product:', error);
     return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
-  }
-}
-
-// PUT - Update product
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
-  try {
-    console.log('🔄 PUT Product API: Updating product with ID:', params.id);
-
-    const client = await clientPromise;
-    const db = client.db();
-
-    if (!ObjectId.isValid(params.id)) {
-      return NextResponse.json({ error: 'Invalid product ID' }, { status: 400 });
-    }
-
-    const formData = await request.formData();
-
-    // Extract form fields
-    const name = formData.get('name') as string;
-    const description = formData.get('description') as string;
-    const price = parseFloat(formData.get('price') as string);
-    const discountPrice = parseFloat(formData.get('discountPrice') as string) || 0;
-    const categoriesJson = formData.get('categories') as string;
-    const inStock = formData.get('inStock') === 'true';
-    const rating = parseFloat(formData.get('rating') as string) || 0;
-    const categories = categoriesJson ? JSON.parse(categoriesJson) : [];
-    const rawType = formData.get('type') as string;
-    const type: 'simple' | 'variable' = rawType === 'variable' ? 'variable' : 'simple';
-    const sku = formData.get('sku') as string || '';
-    const brand = formData.get('brand') as string || '';
-    const stockQuantity = parseInt(formData.get('stockQuantity') as string) || 0;
-    const weight = parseFloat(formData.get('weight') as string) || 0;
-    const dimensionsJson = formData.get('dimensions') as string;
-    const shippingClass = formData.get('shippingClass') as string || '';
-    const hasGuarantee = formData.get('hasGuarantee') === 'true';
-    const hasReferal = formData.get('hasReferal') === 'true';
-    const hasChange = formData.get('hasChange') === 'true';
-    const seoTitle = formData.get('seoTitle') as string || '';
-    const seoDescription = formData.get('seoDescription') as string || '';
-    const attributesJson = formData.get('attributes') as string;
-    const specificationsJson = formData.get('specifications') as string;
-    const variantsJson = formData.get('variants') as string;
-    const todayOffer = formData.get('todayOffer') === 'true';
-    const featuredProduct = formData.get('FeaturedProduct') === 'true';
-
-    const dimensions = dimensionsJson
-      ? JSON.parse(dimensionsJson)
-      : { width: 0, height: 0, depth: 0 };
-    const attributes = attributesJson ? JSON.parse(attributesJson) : [];
-    const specifications = specificationsJson ? JSON.parse(specificationsJson) : [];
-    let variants = variantsJson ? JSON.parse(variantsJson) : [];
-
-    console.log('📝 Update data received:', {
-      name,
-      description,
-      price,
-      discountPrice,
-      categories,
-      type,
-      variants,
-    });
-
-    // Validate required fields
-    if (!name || !description || categories.length === 0) {
-      return NextResponse.json(
-        { error: 'Name, description, and at least one category are required' },
-        { status: 400 }
-      );
-    }
-
-    // Validate all categories exist
-    for (const categoryId of categories) {
-      if (!ObjectId.isValid(categoryId)) {
-        return NextResponse.json({ error: `Invalid category ID: ${categoryId}` }, { status: 400 });
-      }
-      const categoryExists = await db.collection('categories').findOne({
-        _id: new ObjectId(categoryId),
-      });
-      if (!categoryExists) {
-        return NextResponse.json({ error: `Category not found: ${categoryId}` }, { status: 400 });
-      }
-    }
-
-    // Validate attributes
-    if (!validateAttributes(attributes)) {
-      return NextResponse.json({ error: 'Invalid attributes format' }, { status: 400 });
-    }
-
-    // Validate variations for variable products
-    if (type === 'variable') {
-      if (!variants || variants.length === 0) {
-        return NextResponse.json(
-          { error: 'Variable products must have at least one variation' },
-          { status: 400 }
-        );
-      }
-      if (!validateVariantAttributes(variants, attributes)) {
-        return NextResponse.json({ error: 'Invalid variant attributes format' }, { status: 400 });
-      }
-      // Assign proper ObjectIds to new variations
-      variants = variants.map((variant: unknown) => ({
-        ...(variant as ProductVariant),
-        _id: (variant as ProductVariant)._id?.startsWith('temp-') ? new ObjectId().toString() : (variant as ProductVariant)._id,
-      }));
-    } else {
-      variants = []; // Clear variants for simple products
-    }
-
-    // Validate discount price
-    if (discountPrice > price) {
-      return NextResponse.json(
-        { error: 'Discount price cannot be greater than regular price' },
-        { status: 400 }
-      );
-    }
-
-    // Check if product exists
-    const existingProduct = await db.collection('products').findOne({
-      _id: new ObjectId(params.id),
-    });
-
-    if (!existingProduct) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-    }
-
-    // Handle main image
-    let mainImageUrl = formData.get('imageUrl') as string;
-    const mainImageFile = formData.get('mainImage') as File;
-
-    if (mainImageFile && mainImageFile.size > 0) {
-      const validationError = validateFile(mainImageFile, 'image');
-      if (validationError) {
-        return NextResponse.json({ error: `Main image: ${validationError}` }, { status: 400 });
-      }
-      mainImageUrl = await saveUploadedFile(mainImageFile);
-      if (existingProduct.image && existingProduct.image.startsWith('/uploads/')) {
-        await deleteFile(existingProduct.image);
-      }
-    } else {
-      mainImageUrl = existingProduct.image;
-    }
-
-    // Handle additional media files
-    const mediaFiles = formData.getAll('mediaFiles') as File[];
-    const mediaToRemoveInput = formData.get('mediaToRemove') as string;
-    const mediaToRemove: Array<{ url: string }> = mediaToRemoveInput ? JSON.parse(mediaToRemoveInput) : [];
-    let additionalMedia: Array<{
-      url: string;
-      type: 'image' | 'video';
-      name?: string;
-      size?: number;
-      mimeType?: string;
-    }> = existingProduct.additionalMedia || [];
-
-    console.log('📸 Media files to process:', mediaFiles.length);
-    console.log('🗑️ Media to remove:', mediaToRemove);
-
-    // Remove media files marked for deletion
-    if (mediaToRemove.length > 0) {
-      for (const media of mediaToRemove) {
-        if (media.url && media.url.startsWith('/uploads/')) {
-          await deleteFile(media.url);
-        }
-      }
-      additionalMedia = additionalMedia.filter(
-        (existingMedia: { url: string }) =>
-          !mediaToRemove.some((mediaToRemove: { url: string }) => mediaToRemove.url === existingMedia.url)
-      );
-    }
-
-    // Add new media files
-    for (const mediaFile of mediaFiles) {
-      if (mediaFile && mediaFile.size > 0) {
-        const fileType = mediaFile.type.startsWith('image/') ? 'image' : mediaFile.type.startsWith('video/') ? 'video' : null;
-        if (!fileType) {
-          console.warn(`Skipping invalid file type: ${mediaFile.type}`);
-          continue;
-        }
-        const validationError = validateFile(mediaFile, fileType);
-        if (validationError) {
-          console.warn(`Skipping invalid media file: ${validationError}`);
-          continue;
-        }
-        const mediaUrl = await saveUploadedFile(mediaFile);
-        additionalMedia.push({
-          url: mediaUrl,
-          type: fileType,
-          name: mediaFile.name,
-          size: mediaFile.size,
-          mimeType: mediaFile.type,
-        });
-        console.log('✅ Added new media:', { url: mediaUrl, type: fileType });
-      }
-    }
-
-    // Generate slug if name changed
-    const slug = existingProduct.slug && existingProduct.name === name ? existingProduct.slug : generateSlug(name);
-
-    // Update product in database
-    const updateData: Partial<Product> = {
-      name,
-      description,
-      price,
-      discountPrice,
-      categories,
-      image: mainImageUrl,
-      inStock,
-      rating,
-      additionalMedia,
-      type,
-      sku,
-      brand,
-      stockQuantity,
-      weight,
-      dimensions,
-      shippingClass,
-      hasGuarantee,
-      hasReferal,
-      hasChange,
-      seoTitle,
-      seoDescription,
-      attributes,
-      specifications,
-      variants,
-      todayOffer,
-      featuredProduct,
-      slug,
-      updatedAt: new Date().toISOString(),
-    };
-
-    console.log('💾 Saving to database:', updateData);
-
-    const result = await db.collection('products').updateOne(
-      { _id: new ObjectId(params.id) },
-      { $set: updateData }
-    );
-
-    console.log('📊 Update result:', result);
-
-    if (result.matchedCount === 0) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
-    }
-
-    console.log('✅ PUT Product API: Successfully updated product');
-    return NextResponse.json({
-      success: true,
-      modifiedCount: result.modifiedCount,
-      message: 'Product updated successfully',
-    });
-  } catch (error) {
-    console.error('❌ PUT Product API Error:', error);
-    return NextResponse.json(
-      { error: 'Failed to update product', details: error instanceof Error ? error.message : 'Unknown error' },
-      { status: 500 }
-    );
   }
 }
 
@@ -694,20 +418,7 @@ async function saveUploadedFile(file: File): Promise<string> {
     }
   }
   await writeFile(filePath, buffer);
-  console.log(`File saved: ${fileName} (${file.size} bytes)`);
   return `/uploads/${fileName}`;
-}
-
-async function deleteFile(fileUrl: string): Promise<void> {
-  try {
-    const fileName = fileUrl.split('/').pop();
-    if (!fileName) return;
-    const filePath = path.join(process.cwd(), 'public', 'uploads', fileName);
-    await unlink(filePath);
-    console.log(`File deleted: ${fileName}`);
-  } catch (error) {
-    console.error('Error deleting file:', error);
-  }
 }
 
 function generateSlug(name: string): string {
