@@ -14,7 +14,7 @@ export default function AboutUs() {
         <div className="container mx-auto px-4 relative z-20">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              We Don't Just Sell Tech
+              We Don&apos;t Just Sell Tech
             </h1>
             <p className="text-xl md:text-2xl mb-8 text-blue-200">
               We deliver{" "}
@@ -99,9 +99,9 @@ export default function AboutUs() {
                     </p>
                     <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-xl border-l-4 border-blue-500 mt-6">
                       <p className="font-semibold text-gray-800">
-                        "Our first sale was a refurbished laptop to a college
-                        student. The thank you note we received confirmed we
-                        were on the right path."
+                        &quot;Our first sale was a refurbished laptop to a
+                        college student. The thank you note we received
+                        confirmed we were on the right path.&quot;
                       </p>
                     </div>
                   </div>
@@ -115,7 +115,7 @@ export default function AboutUs() {
                   </h3>
                   <div className="space-y-4 text-gray-600">
                     <p className="text-lg leading-relaxed">
-                      We're on a mission to{" "}
+                      We&apos;re on a mission to{" "}
                       <span className="font-semibold text-purple-600">
                         democratize technology
                       </span>{" "}
@@ -173,12 +173,12 @@ export default function AboutUs() {
               {activeTab === "future" && (
                 <div className="animate-fadeIn">
                   <h3 className="text-2xl font-bold text-gray-800 mb-6">
-                    Tomorrow's Tech, Today
+                    Tomorrow&apos;s Tech, Today
                   </h3>
                   <div className="space-y-4 text-gray-600">
                     <p className="text-lg leading-relaxed">
-                      We're constantly exploring emerging technologies to bring
-                      you the future, today. From AI-powered devices to
+                      We&apos;re constantly exploring emerging technologies to
+                      bring you the future, today. From AI-powered devices to
                       sustainable tech solutions.
                     </p>
                     <div className="flex flex-wrap gap-3 mt-4">
@@ -231,7 +231,7 @@ export default function AboutUs() {
                   </svg>
                 ),
                 title: "Innovation First",
-                desc: "We stay ahead of the curve, bringing you tomorrow's technology today",
+                desc: "We stay ahead of the curve, bringing you tomorrow&apos;s technology today",
               },
               {
                 icon: (

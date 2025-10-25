@@ -1,4 +1,5 @@
-import { ReactNode } from 'react';
+import Link from "next/link";
+import { ReactNode } from "react";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -14,45 +15,34 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <a 
-                href="/" 
-                className="text-gray-600 hover:text-gray-900"
-              >
+              <Link href="/" className="text-gray-600 hover:text-gray-900">
                 View Site
-              </a>
+              </Link>
             </div>
           </div>
         </div>
       </nav>
-      
+
       <div className="flex">
         {/* Sidebar */}
         <div className="w-64 bg-white shadow-sm min-h-[calc(100vh-4rem)]">
           <nav className="mt-5 px-4">
             <div className="space-y-1">
-              <SidebarLink 
-                href="/admin/products" 
-                label="Manage Products" 
+              <SidebarLink
+                href="/admin/products"
+                label="Manage Products"
                 icon="📦"
               />
-              <SidebarLink 
-                href="/admin/users" 
-                label="Manage Users" 
-                icon="👥"
-              />
-              <SidebarLink 
-                href="/admin/posts" 
-                label="Manage Posts" 
-                icon="📝"
-              />
-              <SidebarLink 
-                href="/admin/orders" 
-                label="Manage Orders" 
+              <SidebarLink href="/admin/users" label="Manage Users" icon="👥" />
+              <SidebarLink href="/admin/posts" label="Manage Posts" icon="📝" />
+              <SidebarLink
+                href="/admin/orders"
+                label="Manage Orders"
                 icon="📋"
               />
-              <SidebarLink 
-                href="/admin/categories" 
-                label="Manage Categories" 
+              <SidebarLink
+                href="/admin/categories"
+                label="Manage Categories"
                 icon="📋"
               />
             </div>
@@ -60,9 +50,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
 
         {/* Main content */}
-        <div className="flex-1 p-6">
-          {children}
-        </div>
+        <div className="flex-1 p-6">{children}</div>
       </div>
     </div>
   );
@@ -76,12 +64,12 @@ interface SidebarLinkProps {
 
 function SidebarLink({ href, label, icon }: SidebarLinkProps) {
   return (
-    <a
+    <Link
       href={href}
       className="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition-colors duration-200 group"
     >
       {icon && <span className="mr-3 text-lg">{icon}</span>}
       <span className="font-medium">{label}</span>
-    </a>
+    </Link>
   );
 }

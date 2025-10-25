@@ -1,8 +1,7 @@
-// src/app/api/public/products/[slug]/route.ts
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongoDb';
 import { ObjectId } from 'mongodb';
-import { Product } from '../../../../../types/product';
+import { Product, ProductVariant } from '../../../../../types/product';
 
 export async function GET(
   request: Request,
@@ -10,7 +9,6 @@ export async function GET(
 ) {
   try {
     const { slug } = await context.params;
-    console.log('🔍 GET Product API: Fetching product with slug:', slug);
 
     const client = await clientPromise;
     const db = client.db();
@@ -18,7 +16,6 @@ export async function GET(
     const product = await db.collection('products').findOne({ slug });
 
     if (!product) {
-      console.warn(`⚠️ Product not found for slug: ${slug}`);
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
@@ -32,6 +29,27 @@ export async function GET(
           if (category) categoryNames.push(category.name);
         }
       }
+    }
+
+    // Define MongoDB variant type
+    interface MongoVariant {
+      _id?: ObjectId | string;
+      name?: string;
+      sku?: string;
+      price: number;
+      discountPrice?: number;
+      inStock: boolean;
+      stockQuantity: number;
+      specifications: Array<{ key: string; value: string }>;
+      additionalMedia?: Array<{
+        url: string;
+        type: "image" | "video";
+        name?: string;
+        size?: number;
+        mimeType?: string;
+      }>;
+      attributes?: Array<{ name: string; value: string }>;
+      image: string;
     }
 
     const serializedProduct: Product = {
@@ -60,9 +78,9 @@ export async function GET(
       seoDescription: product.seoDescription || '',
       attributes: product.attributes || [],
       specifications: product.specifications || [],
-      variants: (product.variants || []).map((variant: any) => ({
+      variants: (product.variants || []).map((variant: MongoVariant) => ({
         ...variant,
-        _id: variant._id?.toString?.() || '',
+        _id: variant._id?.toString?.() || new ObjectId().toString(),
       })),
       todayOffer: product.todayOffer || false,
       featuredProduct: product.featuredProduct || false,
@@ -71,10 +89,8 @@ export async function GET(
       updatedAt: product.updatedAt ? new Date(product.updatedAt).toISOString() : "",
     };
 
-    console.log('✅ GET Product API: Successfully fetched product');
     return NextResponse.json(serializedProduct);
   } catch (error) {
-    console.error('❌ GET Product API Error:', error);
     return NextResponse.json(
       {
         error: 'Failed to fetch product',

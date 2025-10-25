@@ -20,18 +20,26 @@ export interface ProductVariant {
     mimeType?: string;
   }>;
   attributes?: Array<{ name: string; value: string }>;
-
   image: string; // This should be the permanent URL from the database
   imageFile?: File; // Temporary file object for new uploads
   imagePreview?: string; // Temporary blob URL for preview only
 }
 
-export interface ProductReview {
-  userId: string;
+// Remove the first ProductReview interface and keep only this one
+export interface ReviewSubmission {
   username: string;
-  rating: number; // 1–5
+  email: string;
+  rating: number;
   comment: string;
+  userId?: string; // Make userId optional since it's not in your form
+}
+
+export interface ProductReview extends ReviewSubmission {
+  id: string;
   createdAt: string;
+  verified?: boolean;
+  helpful?: number;
+  productSlug?: string;
 }
 
 export interface Product {
@@ -76,21 +84,8 @@ export interface Product {
   rating?: number;
   reviewCount?: number;
 }
+
 export interface Attribute {
   name: string;
   values: string[];
-}
-export interface ReviewSubmission {
-  username: string;
-  email: string;
-  rating: number;
-  comment: string;
-}
-
-export interface ProductReview extends ReviewSubmission {
-  id: string;
-  createdAt: string;
-  verified?: boolean;
-  helpful?: number;
-  productSlug?: string;
 }

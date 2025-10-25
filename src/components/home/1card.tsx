@@ -1,4 +1,4 @@
-export default function HeroSection() {
+export default function OneCard() {
   return (
     <section className="mx-auto px-4 sm:px-6 lg:px-8 pb-12 font-jamjuree rounded-xl">
       <div className="relative lg:min-h-120 bg-gray-900 rounded-xl">
@@ -22,7 +22,7 @@ export default function HeroSection() {
                 monitor screen for gaming
               </h6>
               <p className="text-sm text-white mb-6 leading-relaxed">
-                34" Curved Monitor | 3K 165Hz Display | Stereo SoundBar
+                34&quot; Curved Monitor | 3K 165Hz Display | Stereo SoundBar
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -1,27 +1,67 @@
-// /api/CategorySearch/route.ts
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../lib/mongoDb';
+import { ObjectId } from 'mongodb';
 
+// Define types for MongoDB filters
+interface ProductFilters {
+  $or?: Array<{
+    name?: { $regex: string; $options: string };
+    description?: { $regex: string; $options: string };
+  }>;
+  categories?: { $in: string[] };
+}
+
+// Define MongoDB product document type
+interface ProductDocument {
+  _id: ObjectId;
+  name: string;
+  description: string;
+  price: number;
+  discountPrice?: number;
+  image: string;
+  inStock: boolean;
+  rating?: number;
+  todayOffer?: boolean;
+  FeaturedProduct?: boolean;
+  categories?: string[];
+}
+
+// Define category document type
+interface CategoryDocument {
+  _id: ObjectId;
+  id?: string;
+  name: string;
+}
+
+// Define response product type
+interface FormattedProduct {
+  id: string;
+  type: 'product';
+  name: string;
+  description: string;
+  price: number;
+  discountPrice?: number;
+  image: string;
+  inStock: boolean;
+  rating?: number;
+  todayOffer?: boolean;
+  FeaturedProduct?: boolean;
+  categories: string[];
+  categoryNames: string[];
+}
 export async function GET(request: Request) {
   try {
-    console.log('🔍 === CATEGORY SEARCH API CALLED ===');
-    
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q') || '';
-    const categoriesParam = searchParams.get('categories') || '';
-
-    console.log('📥 Request parameters:', { query, categoriesParam });
-
+    const categoriesParam = searchParams.get('categories') || ''
     const client = await clientPromise;
     const db = client.db();
-
     if (!query.trim() && !categoriesParam) {
-      console.log('❌ No search criteria provided');
       return NextResponse.json([]);
     }
 
-    // Build search filters for products
-    const productFilters: any = {};
+    // Build search filters for products with proper typing
+    const productFilters: ProductFilters = {};
 
     // Text search for products
     if (query.trim()) {
@@ -34,47 +74,35 @@ export async function GET(request: Request) {
     // Multiple categories filter
     if (categoriesParam) {
       const categoryIds = categoriesParam.split(',');
-      console.log('🎯 Applying category filters:', categoryIds);
-      
       if (categoryIds.length > 0) {
         productFilters.categories = { $in: categoryIds };
       }
     }
 
-    console.log('🔍 Final MongoDB query:', JSON.stringify(productFilters, null, 2));
-
     // Search products with filters
-    const products = await db.collection('products')
+    const products = await db.collection<ProductDocument>('products')
       .find(productFilters)
       .limit(20)
       .toArray();
-
-    console.log('📦 Found products:', products.length);
-    
     // Log each product with its categories for verification
     products.forEach((product, index) => {
       const categoryIds = categoriesParam ? categoriesParam.split(',') : [];
       const hasRequestedCategories = product.categories && categoryIds.some(catId => 
-        product.categories.includes(catId)
+        product.categories?.includes(catId)
       );
-      console.log(`  ${index + 1}. "${product.name}"`);
-      console.log(`     Categories: ${JSON.stringify(product.categories)}`);
-      console.log(`     Has requested categories: ${hasRequestedCategories}`);
-      console.log(`     ---`);
     });
 
     // Get all categories for mapping
-    const allCategories = await db.collection('categories').find({}).toArray();
-    const categoryMap = new Map();
+    const allCategories = await db.collection<CategoryDocument>('categories').find({}).toArray();
+    const categoryMap = new Map<string, string>();
     allCategories.forEach(cat => {
       categoryMap.set(cat._id.toString(), cat.name);
-      categoryMap.set(cat.id, cat.name);
+      if (cat.id) {
+        categoryMap.set(cat.id, cat.name);
+      }
     });
-
-    console.log('🗂️ Category mapping:', Object.fromEntries(categoryMap));
-
     // Format products with category names
-    const formattedProducts = products.map(product => ({
+    const formattedProducts: FormattedProduct[] = products.map(product => ({
       id: product._id.toString(),
       type: 'product' as const,
       name: product.name,
@@ -91,15 +119,9 @@ export async function GET(request: Request) {
         categoryMap.get(catId) || 'Uncategorized'
       )
     }));
-
-    const results = [...formattedProducts];
-    
-    console.log('✅ Final results count:', results.length);
-    console.log('=== CATEGORY SEARCH API COMPLETE ===\n');
-    
+    const results = [...formattedProducts]; 
     return NextResponse.json(results);
   } catch (error) {
-    console.error('❌ Search error:', error);
     return NextResponse.json([], { status: 500 });
   }
 }

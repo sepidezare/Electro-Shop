@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import Image from "next/image";
 import {
   Product,
   ProductVariant,
@@ -85,7 +87,6 @@ export default function ProductForm({ product }: ProductFormProps) {
 
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const mediaInputRef = useRef<HTMLInputElement>(null);
-  // Add these functions inside your component
 
   // Handle variant image change
   const handleVariantImageChange = (
@@ -143,6 +144,7 @@ export default function ProductForm({ product }: ProductFormProps) {
       })
     );
   };
+
   useEffect(() => {
     if (selectedCategories.length === 0 || expandedCategories.size > 0) return;
 
@@ -376,7 +378,11 @@ export default function ProductForm({ product }: ProductFormProps) {
     setAttributes((prev) => [...prev, { name: "", values: [] }]);
   };
 
-  const updateAttribute = (index: number, field: string, value: any) => {
+  const updateAttribute = (
+    index: number,
+    field: string,
+    value: string | string[]
+  ) => {
     setAttributes((prev) =>
       prev.map((attr, i) => (i === index ? { ...attr, [field]: value } : attr))
     );
@@ -449,25 +455,11 @@ export default function ProductForm({ product }: ProductFormProps) {
   };
 
   // Variation management functions
-  const addVariation = () => {
-    const newVariation: ProductVariant = {
-      _id: `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      name: "",
-      sku: "",
-      price: formData.price || 0,
-      discountPrice: formData.discountPrice || 0,
-      inStock: true,
-      stockQuantity: 0,
-      specifications: [],
-      image: "",
-      additionalMedia: [],
-      attributes: [],
-    };
-    setVariations((prev) => [...prev, newVariation]);
-    setEditingVariationIndex(variations.length);
-  };
-
-  const updateVariation = (index: number, field: string, value: any) => {
+  const updateVariation = (
+    index: number,
+    field: string,
+    value: string | number | boolean
+  ) => {
     setVariations((prev) =>
       prev.map((variation, i) =>
         i === index ? { ...variation, [field]: value } : variation
@@ -567,8 +559,6 @@ export default function ProductForm({ product }: ProductFormProps) {
     }));
   };
 
-  // Remove this useEffect from inside handleSubmit and place it at the component level:
-
   // Clean up blob URLs on component unmount
   useEffect(() => {
     return () => {
@@ -659,7 +649,7 @@ export default function ProductForm({ product }: ProductFormProps) {
       // Append variations for variable products
       if (formData.type === "variable") {
         // Prepare variants data with image information
-        const variantsData = variations.map((variation, index) => {
+        const variantsData = variations.map((variation) => {
           const variantData = {
             _id: variation._id,
             name: variation.name,
@@ -701,7 +691,7 @@ export default function ProductForm({ product }: ProductFormProps) {
       }
 
       // Append additional media files
-      additionalMedia.forEach((media, index) => {
+      additionalMedia.forEach((media) => {
         if (media.file) {
           formDataToSend.append("mediaFiles", media.file);
         }
@@ -713,7 +703,7 @@ export default function ProductForm({ product }: ProductFormProps) {
 
       // Debug: Log what's being sent
       console.log("FormData contents:");
-      for (let [key, value] of formDataToSend.entries()) {
+      for (const [key, value] of formDataToSend.entries()) {
         if (value instanceof File) {
           console.log(key, `File: ${value.name}, Size: ${value.size} bytes`);
         } else {
@@ -1090,8 +1080,8 @@ export default function ProductForm({ product }: ProductFormProps) {
             </div>
             {formData.specifications.length === 0 ? (
               <p className="text-sm text-gray-500 text-center py-4 border border-dashed border-gray-300 rounded-md">
-                No specifications added. Click "Add Specification" to add
-                product attributes.
+                No specifications added. Click &quot;Add Specification&quot; to
+                add product attributes.
               </p>
             ) : (
               <div className="space-y-2">
@@ -1292,7 +1282,7 @@ export default function ProductForm({ product }: ProductFormProps) {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {variations.map((variation, index) => (
+                  {variations.map((variation) => (
                     <div
                       key={variation._id}
                       className="border border-gray-200 rounded-lg p-6 bg-white shadow-sm"
@@ -1305,7 +1295,12 @@ export default function ProductForm({ product }: ProductFormProps) {
                         <div className="space-y-4">
                           <input
                             type="file"
-                            onChange={(e) => handleVariantImageChange(index, e)}
+                            onChange={(e) =>
+                              handleVariantImageChange(
+                                variations.indexOf(variation),
+                                e
+                              )
+                            }
                             accept="image/*"
                             className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                           />
@@ -1316,11 +1311,13 @@ export default function ProductForm({ product }: ProductFormProps) {
                                 Preview:
                               </p>
                               <div className="relative inline-block">
-                                <img
+                                <Image
                                   src={
                                     variation.imagePreview || variation.image
                                   }
                                   alt={`${variation.name} preview`}
+                                  width={128}
+                                  height={128}
                                   className="h-32 w-32 object-cover rounded-md border"
                                   onError={(e) => {
                                     console.error(
@@ -1334,7 +1331,11 @@ export default function ProductForm({ product }: ProductFormProps) {
                                 />
                                 <button
                                   type="button"
-                                  onClick={() => removeVariantImage(index)}
+                                  onClick={() =>
+                                    removeVariantImage(
+                                      variations.indexOf(variation)
+                                    )
+                                  }
                                   className="absolute -top-2 -right-2 p-1 bg-red-600 text-white rounded-full hover:bg-red-700"
                                   title="Remove image"
                                 >
@@ -1370,11 +1371,13 @@ export default function ProductForm({ product }: ProductFormProps) {
                       </div>
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-medium text-gray-900">
-                          Variation {index + 1}
+                          Variation {variations.indexOf(variation) + 1}
                         </h3>
                         <button
                           type="button"
-                          onClick={() => removeVariation(index)}
+                          onClick={() =>
+                            removeVariation(variations.indexOf(variation))
+                          }
                           className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                         >
                           Remove
@@ -1390,7 +1393,11 @@ export default function ProductForm({ product }: ProductFormProps) {
                             type="text"
                             value={variation.name}
                             onChange={(e) =>
-                              updateVariation(index, "name", e.target.value)
+                              updateVariation(
+                                variations.indexOf(variation),
+                                "name",
+                                e.target.value
+                              )
                             }
                             required
                             className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
@@ -1405,7 +1412,11 @@ export default function ProductForm({ product }: ProductFormProps) {
                             type="text"
                             value={variation.sku}
                             onChange={(e) =>
-                              updateVariation(index, "sku", e.target.value)
+                              updateVariation(
+                                variations.indexOf(variation),
+                                "sku",
+                                e.target.value
+                              )
                             }
                             className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                             placeholder="e.g., PROD-RED-L"
@@ -1423,7 +1434,7 @@ export default function ProductForm({ product }: ProductFormProps) {
                             value={variation.price}
                             onChange={(e) =>
                               updateVariation(
-                                index,
+                                variations.indexOf(variation),
                                 "price",
                                 parseFloat(e.target.value) || 0
                               )
@@ -1443,7 +1454,7 @@ export default function ProductForm({ product }: ProductFormProps) {
                             value={variation.discountPrice || 0}
                             onChange={(e) =>
                               updateVariation(
-                                index,
+                                variations.indexOf(variation),
                                 "discountPrice",
                                 parseFloat(e.target.value) || 0
                               )
@@ -1465,7 +1476,7 @@ export default function ProductForm({ product }: ProductFormProps) {
                             value={variation.stockQuantity}
                             onChange={(e) =>
                               updateVariation(
-                                index,
+                                variations.indexOf(variation),
                                 "stockQuantity",
                                 parseInt(e.target.value) || 0
                               )
@@ -1481,7 +1492,7 @@ export default function ProductForm({ product }: ProductFormProps) {
                               checked={variation.inStock}
                               onChange={(e) =>
                                 updateVariation(
-                                  index,
+                                  variations.indexOf(variation),
                                   "inStock",
                                   e.target.checked
                                 )
@@ -1503,7 +1514,11 @@ export default function ProductForm({ product }: ProductFormProps) {
                           </label>
                           <button
                             type="button"
-                            onClick={() => addSpecificationToVariation(index)}
+                            onClick={() =>
+                              addSpecificationToVariation(
+                                variations.indexOf(variation)
+                              )
+                            }
                             className="px-3 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
                           >
                             + Add Specification
@@ -1517,7 +1532,7 @@ export default function ProductForm({ product }: ProductFormProps) {
                               value={spec.key}
                               onChange={(e) =>
                                 updateVariationSpecification(
-                                  index,
+                                  variations.indexOf(variation),
                                   specIndex,
                                   "key",
                                   e.target.value
@@ -1531,7 +1546,7 @@ export default function ProductForm({ product }: ProductFormProps) {
                               value={spec.value}
                               onChange={(e) =>
                                 updateVariationSpecification(
-                                  index,
+                                  variations.indexOf(variation),
                                   specIndex,
                                   "value",
                                   e.target.value
@@ -1543,7 +1558,7 @@ export default function ProductForm({ product }: ProductFormProps) {
                               type="button"
                               onClick={() =>
                                 removeSpecificationFromVariation(
-                                  index,
+                                  variations.indexOf(variation),
                                   specIndex
                                 )
                               }
@@ -1555,8 +1570,8 @@ export default function ProductForm({ product }: ProductFormProps) {
                         ))}
                         {variation.specifications.length === 0 && (
                           <p className="text-sm text-gray-500 text-center py-4 border border-dashed border-gray-300 rounded-md">
-                            No specifications added. Click "Add Specification"
-                            to add variant attributes.
+                            No specifications added. Click &quot;Add
+                            Specification&quot; to add variant attributes.
                           </p>
                         )}
                       </div>
@@ -1707,13 +1722,15 @@ export default function ProductForm({ product }: ProductFormProps) {
               {(formData.image || mainImageFile) && (
                 <div className="mt-2">
                   <p className="text-sm text-gray-600 mb-2">Preview:</p>
-                  <img
+                  <Image
                     src={
                       mainImageFile
                         ? URL.createObjectURL(mainImageFile)
                         : formData.image
                     }
                     alt="Preview"
+                    width={128}
+                    height={128}
                     className="h-32 w-32 object-cover rounded-md border"
                     onError={(e) => {
                       console.error("Failed to load image preview");
@@ -1746,12 +1763,19 @@ export default function ProductForm({ product }: ProductFormProps) {
                     Additional Media Preview:
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                    {additionalMedia.map((media, index) => (
-                      <div key={index} className="relative group">
+                    {additionalMedia.map((media) => (
+                      <div
+                        key={additionalMedia.indexOf(media)}
+                        className="relative group"
+                      >
                         {media.type === "image" ? (
-                          <img
+                          <Image
                             src={media.preview}
-                            alt={`Additional media ${index + 1}`}
+                            alt={`Additional media ${
+                              additionalMedia.indexOf(media) + 1
+                            }`}
+                            width={96}
+                            height={96}
                             className="h-24 w-full object-cover rounded-md border shadow-sm"
                           />
                         ) : (
@@ -1775,7 +1799,11 @@ export default function ProductForm({ product }: ProductFormProps) {
                         <div className="absolute inset-0 bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 rounded-md flex items-start justify-end p-1">
                           <button
                             type="button"
-                            onClick={() => removeAdditionalMedia(index)}
+                            onClick={() =>
+                              removeAdditionalMedia(
+                                additionalMedia.indexOf(media)
+                              )
+                            }
                             className="p-1 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 transform scale-90 group-hover:scale-100"
                             title="Remove media"
                           >
@@ -1796,7 +1824,8 @@ export default function ProductForm({ product }: ProductFormProps) {
                         </div>
 
                         <div className="mt-1 text-xs text-gray-500 truncate">
-                          {media.name || `Media ${index + 1}`}
+                          {media.name ||
+                            `Media ${additionalMedia.indexOf(media) + 1}`}
                           <span className="ml-1 text-xs px-1 py-0.5 bg-gray-100 rounded">
                             {media.type}
                           </span>
@@ -1855,7 +1884,9 @@ export default function ProductForm({ product }: ProductFormProps) {
                 onChange={handleChange}
                 className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
-              <span className="ml-2 text-sm text-gray-700">Today's Offer</span>
+              <span className="ml-2 text-sm text-gray-700">
+                Today&apos;s Offer
+              </span>
             </label>
             <label className="flex items-center">
               <input
@@ -1903,12 +1934,12 @@ export default function ProductForm({ product }: ProductFormProps) {
         </div>
 
         <div className="flex justify-end space-x-3 pt-4">
-          <a
+          <Link
             href="/admin/products"
             className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
           >
             Cancel
-          </a>
+          </Link>
           <button
             type="submit"
             disabled={loading}

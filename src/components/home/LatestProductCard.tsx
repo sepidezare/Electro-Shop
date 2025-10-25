@@ -3,6 +3,7 @@
 
 import { Product, ProductVariant } from "@/types/product";
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import QuickViewModal from "../Products/QuickViewModal";
 import { useCart } from "@/context/CartContext";
@@ -18,30 +19,6 @@ export default function ProductCard({ product }: ProductCardProps) {
   const [showQuickView, setShowQuickView] = useState(false);
   const { addToCart } = useCart();
 
-  const getTooltipPosition = (element: HTMLElement) => {
-    const rect = element.getBoundingClientRect();
-    const viewportWidth = window.innerWidth;
-
-    // If element is near right edge, show tooltip on the left
-    if (rect.right > viewportWidth - 200) {
-      return "left";
-    }
-    // If element is near left edge, show tooltip on the right
-    if (rect.left < 200) {
-      return "right";
-    }
-    // Default to right side
-    return "right";
-  };
-
-  const handleAddToCart = (
-    product: Product,
-    variant?: ProductVariant,
-    quantity: number = 1
-  ) => {
-    addToCart(product, variant, quantity);
-  };
-
   const priceRange = getProductPriceRange(product);
   const hasMultiplePrices = priceRange.min !== priceRange.max;
 
@@ -51,11 +28,6 @@ export default function ProductCard({ product }: ProductCardProps) {
     slug: product.slug,
     name: product.name,
   });
-
-  // Use slug if available, otherwise fall back to _id
-  const productLink = product.slug
-    ? `/products/${product.slug}`
-    : `/products/${product._id}`;
 
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -68,10 +40,6 @@ export default function ProductCard({ product }: ProductCardProps) {
     e.preventDefault();
     e.stopPropagation();
     setShowQuickView(true);
-  };
-
-  const closeQuickView = () => {
-    setShowQuickView(false);
   };
 
   const handleAddToCartWithDetails = (
@@ -256,9 +224,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             className="w-full h-full flex items-center justify-center"
             aria-label={`View details for ${product.name}`}
           >
-            <img
+            <Image
               src={product.image || "/images/fallback.jpg"}
               alt={product.name}
+              width={192}
+              height={192}
               className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
             />
           </Link>
@@ -330,7 +300,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           {product.todayOffer && (
             <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-              Today's Offer
+              Today&apos;s Offer
             </span>
           )}
           {product.featuredProduct && (

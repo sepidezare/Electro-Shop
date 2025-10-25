@@ -52,7 +52,7 @@ export default function ContactUs() {
               transition={{ duration: 0.6 }}
               className="text-5xl md:text-6xl font-black mb-6 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent"
             >
-              Let's Connect
+              Let&apos;s Connect
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
@@ -60,7 +60,7 @@ export default function ContactUs() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl md:text-2xl mb-8 text-blue-200"
             >
-              Your ideas, our technology - let's build something amazing
+              Your ideas, our technology - let&apos;s build something amazing
               together
             </motion.p>
           </div>

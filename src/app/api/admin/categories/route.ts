@@ -1,4 +1,3 @@
-// app/api/admin/categories/route.ts
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../lib/mongoDb';
 import { ObjectId } from 'mongodb';
@@ -10,6 +9,31 @@ interface CategoryData {
   image?: string;
 }
 
+// Define MongoDB category document type
+interface CategoryDocument {
+  _id: ObjectId;
+  name: string;
+  description?: string;
+  parentId?: ObjectId | null;
+  slug: string;
+  image?: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Define serialized category type for response (recursive)
+interface SerializedCategory {
+  _id: string;
+  name: string;
+  description?: string;
+  parentId: string | null;
+  slug: string;
+  image?: string;
+  children?: SerializedCategory[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 // GET all categories with hierarchical structure
 export async function GET() {
   try {
@@ -17,7 +41,7 @@ export async function GET() {
     const db = client.db();
     
     const categories = await db
-      .collection('categories')
+      .collection<CategoryDocument>('categories')
       .find({})
       .sort({ createdAt: -1 })
       .toArray();
@@ -25,14 +49,14 @@ export async function GET() {
     // Convert to hierarchical structure
     const categoryTree = buildCategoryTree(categories);
     
-    const serializedCategories = categoryTree.map(category => ({
+    const serializedCategories: SerializedCategory[] = categoryTree.map(category => ({
       _id: category._id.toString(),
       name: category.name,
       description: category.description,
       parentId: category.parentId ? category.parentId.toString() : null,
       slug: category.slug,
-      image: category.image || undefined, // Add image field
-      children: category.children || [],
+      image: category.image || undefined,
+      children: category.children ? serializeCategoryChildren(category.children) : [],
       createdAt: category.createdAt.toISOString(),
       updatedAt: category.updatedAt.toISOString()
     }));
@@ -69,15 +93,6 @@ export async function POST(request: Request) {
     // Generate slug from name
     const slug = generateSlug(name);
     
-    // Check if slug already exists
-    // const existingCategory = await db.collection('categories').findOne({ slug });
-    // if (existingCategory) {
-    //   return NextResponse.json(
-    //     { error: 'A category with this name already exists' },
-    //     { status: 400 }
-    //   );
-    // }
-
     // Validate parent category exists if provided
     if (parentId) {
       if (!ObjectId.isValid(parentId)) {
@@ -105,17 +120,12 @@ export async function POST(request: Request) {
       description: description?.trim() || '',
       parentId: parentId ? new ObjectId(parentId) : null,
       slug,
-      image: image || null, // Add image field
+      image: image || null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
-
-    console.log('💾 Saving category to database:', categoryData);
-
+    
     const result = await db.collection('categories').insertOne(categoryData);
-
-    console.log('✅ Category created with ID:', result.insertedId);
-
     return NextResponse.json({ 
       success: true, 
       insertedId: result.insertedId,
@@ -127,7 +137,6 @@ export async function POST(request: Request) {
       },
     }, { status: 201 });
   } catch (error) {
-    console.error('Error creating category:', error);
     return NextResponse.json(
       { error: 'Failed to create category' },
       { status: 500 }
@@ -135,26 +144,50 @@ export async function POST(request: Request) {
   }
 }
 
+// Extended interface for categories with children
+interface CategoryWithChildren extends CategoryDocument {
+  children?: CategoryWithChildren[];
+}
+
 // Helper function to build hierarchical category tree
-function buildCategoryTree(categories: any[], parentId: string | null = null): any[] {
-  const tree: any[] = [];
+function buildCategoryTree(
+  categories: CategoryDocument[], 
+  parentId: string | null = null
+): CategoryWithChildren[] {
+  const tree: CategoryWithChildren[] = [];
   
   categories
     .filter(cat => {
       if (parentId === null) {
-        return cat.parentId === null;
+        return cat.parentId === null || cat.parentId === undefined;
       }
       return cat.parentId && cat.parentId.toString() === parentId;
     })
     .forEach(cat => {
       const children = buildCategoryTree(categories, cat._id.toString());
-      tree.push({
+      const categoryWithChildren: CategoryWithChildren = {
         ...cat,
         children: children.length > 0 ? children : undefined
-      });
+      };
+      tree.push(categoryWithChildren);
     });
   
   return tree;
+}
+
+// Helper function to recursively serialize category children
+function serializeCategoryChildren(children: CategoryWithChildren[]): SerializedCategory[] {
+  return children.map(child => ({
+    _id: child._id.toString(),
+    name: child.name,
+    description: child.description,
+    parentId: child.parentId ? child.parentId.toString() : null,
+    slug: child.slug,
+    image: child.image || undefined,
+    children: child.children ? serializeCategoryChildren(child.children) : [],
+    createdAt: child.createdAt.toISOString(),
+    updatedAt: child.updatedAt.toISOString()
+  }));
 }
 
 // Helper function to generate slug

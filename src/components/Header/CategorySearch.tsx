@@ -1,6 +1,7 @@
 "use client";
 import { useState, useTransition, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 type Category = {
   id: string;
@@ -166,12 +167,6 @@ export default function CategorySearch() {
     return "Uncategorized";
   };
 
-  const getSelectedCategoryNames = () => {
-    return selectedCategories.map(
-      (catId) => categories.find((cat) => cat.id === catId)?.name || "Unknown"
-    );
-  };
-
   return (
     <div className="relative max-w-4xl mx-auto">
       <div className="flex flex-col sm:flex-row gap-3">
@@ -307,7 +302,7 @@ export default function CategorySearch() {
                       ? "in selected categories"
                       : ""
                   }`
-                : `No results found for "${query}"${
+                : `No results found for &quot;${query}&quot;${
                     selectedCategories.length > 0
                       ? " in selected categories"
                       : ""
@@ -335,9 +330,11 @@ export default function CategorySearch() {
                 >
                   <div className="flex-shrink-0">
                     {item.type === "product" && item.image ? (
-                      <img
+                      <Image
                         src={item.image}
                         alt={item.name}
+                        width={40}
+                        height={40}
                         className="w-10 h-10 rounded-lg object-cover"
                       />
                     ) : (
@@ -401,8 +398,8 @@ export default function CategorySearch() {
           {results.length === 0 && query.length >= 2 && !isPending && (
             <div className="p-4 text-center">
               <p className="text-gray-500">
-                No results found for "
-                <span className="font-semibold">{query}</span>"
+                No results found for &quot;
+                <span className="font-semibold">{query}</span>&quot;
                 {selectedCategories.length > 0 && " in selected categories"}
               </p>
             </div>

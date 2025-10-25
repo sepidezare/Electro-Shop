@@ -1,10 +1,9 @@
-//src\app\api\admin\products\[id]\route.ts
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongoDb';
 import { ObjectId } from 'mongodb';
 import { writeFile, mkdir, unlink } from 'fs/promises';
 import path from 'path';
-import { Product, ProductVariant, ProductSpecification } from '../../../../../types/product';
+import { Product, ProductVariant } from '../../../../../types/product';
 
 // File upload configuration
 const UPLOAD_CONFIG = {
@@ -33,8 +32,19 @@ const UPLOAD_CONFIG = {
   },
 };
 
+// Define attribute types
+interface ProductAttribute {
+  name: string;
+  values: string[];
+}
+
+interface VariantAttribute {
+  name: string;
+  value: string;
+}
+
 // Validate attributes structure
-function validateAttributes(attributes: any): attributes is Array<{ name: string; values: string[] }> {
+function validateAttributes(attributes: unknown): attributes is ProductAttribute[] {
   if (!Array.isArray(attributes)) {
     return false;
   }
@@ -42,98 +52,43 @@ function validateAttributes(attributes: any): attributes is Array<{ name: string
     (attr) =>
       typeof attr === 'object' &&
       attr !== null &&
-      typeof attr.name === 'string' &&
-      attr.name.trim() !== '' &&
-      Array.isArray(attr.values) &&
-      attr.values.every((value: any) => typeof value === 'string' && value.trim() !== '')
+      typeof (attr as ProductAttribute).name === 'string' &&
+      (attr as ProductAttribute).name.trim() !== '' &&
+      Array.isArray((attr as ProductAttribute).values) &&
+      (attr as ProductAttribute).values.every((value: unknown) => typeof value === 'string' && value.trim() !== '')
   );
 }
 
 // Validate variant attributes
-// More flexible variant validation
 function validateVariantAttributes(
-  variants: any[],
-  productAttributes: Array<{ name: string; values: string[] }>
+  variants: unknown[],
+  productAttributes: ProductAttribute[]
 ): variants is ProductVariant[] {
   if (!Array.isArray(variants)) {
-    console.log("❌ Variants is not an array");
     return false;
   }
 
-  console.log(`🔍 Validating ${variants.length} variants`);
-
-  const result = variants.every((variant, index) => {
-    console.log(`🔍 Validating variant ${index}:`, {
-      name: variant.name,
-      price: variant.price,
-      inStock: variant.inStock,
-      stockQuantity: variant.stockQuantity,
-      attributes: variant.attributes
-    });
-
-    // Basic validation
-    if (!variant || typeof variant !== 'object') {
-      console.log(`❌ Variant ${index}: Not an object`);
-      return false;
-    }
-    if (typeof variant.name !== 'string' || variant.name.trim() === '') {
-      console.log(`❌ Variant ${index}: Invalid name`);
-      return false;
-    }
-    if (typeof variant.price !== 'number' || variant.price <= 0) {
-      console.log(`❌ Variant ${index}: Invalid price`);
-      return false;
-    }
-    if (typeof variant.inStock !== 'boolean') {
-      console.log(`❌ Variant ${index}: Invalid inStock`);
-      return false;
-    }
-    if (typeof variant.stockQuantity !== 'number' || variant.stockQuantity < 0) {
-      console.log(`❌ Variant ${index}: Invalid stockQuantity`);
-      return false;
-    }
-    if (!Array.isArray(variant.specifications)) {
-      console.log(`❌ Variant ${index}: specifications not array`);
-      return false;
-    }
-    if (!Array.isArray(variant.attributes)) {
-      console.log(`❌ Variant ${index}: attributes not array`);
-      return false;
-    }
-
+  return variants.every((variant) => {
+    const v = variant as ProductVariant;
+    
     // Validate attributes structure
-    const attributesValid = variant.attributes.every((attr: any, attrIndex: number) => {
-      const isValid = typeof attr === 'object' &&
-        attr !== null &&
-        typeof attr.name === 'string' &&
-        attr.name.trim() !== '' &&
-        typeof attr.value === 'string' &&
-        attr.value.trim() !== '';
-      
-      if (!isValid) {
-        console.log(`❌ Variant ${index}, attribute ${attrIndex}: Invalid structure`, attr);
-      }
-      return isValid;
+    const attributesValid = Array.isArray(v.attributes) && v.attributes.every((attr: unknown) => {
+      const attribute = attr as VariantAttribute;
+      return typeof attribute === 'object' &&
+        attribute !== null &&
+        typeof attribute.name === 'string' &&
+        attribute.name.trim() !== '' &&
+        typeof attribute.value === 'string' &&
+        attribute.value.trim() !== '';
     });
 
-    if (!attributesValid) {
-      console.log(`❌ Variant ${index}: Attributes validation failed`);
-      return false;
-    }
-
-    console.log(`✅ Variant ${index}: All checks passed`);
-    return true;
+    return attributesValid;
   });
-
-  console.log(`🔍 Overall validation result: ${result}`);
-  return result;
 }
 
 // GET single product with category validation
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
-    console.log('🔍 GET Product API: Fetching product with ID:', params.id);
-
     const client = await clientPromise;
     const db = client.db();
 
@@ -189,9 +144,9 @@ export async function GET(request: Request, { params }: { params: { id: string }
       seoDescription: product.seoDescription || '',
       attributes: product.attributes || [],
       specifications: product.specifications || [],
-      variants: (product.variants || []).map((variant: any) => ({
-        ...variant,
-        _id: variant._id.toString(),
+      variants: (product.variants || []).map((variant: unknown) => ({
+        ...(variant as ProductVariant),
+        _id: (variant as ProductVariant)._id?.toString() || new ObjectId().toString(),
       })),
       todayOffer: product.todayOffer || false,
       featuredProduct: product.featuredProduct || false,
@@ -203,6 +158,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     return NextResponse.json(serializedProduct);
   } catch (error) {
     return NextResponse.json(
+      { error: 'Failed to fetch product' },
       { status: 500 }
     );
   }
@@ -291,31 +247,29 @@ export async function POST(request: Request) {
       
       // Process variant images
       variants = await Promise.all(
-        variants.map(async (variant: any, index: number) => {
-          // Check for variant image file
+        variants.map(async (variant: unknown, index: number) => {
+          const v = variant as ProductVariant;
           const variantImageFile = formData.get(`variantImage-${index}`) as File;
-          let variantImageUrl = variant.image; // Use existing image if available
+          let variantImageUrl = v.image;
 
           if (variantImageFile && variantImageFile.size > 0) {
-            console.log(`Processing variant ${index} image:`, variantImageFile.name);
             const validationError = validateFile(variantImageFile, 'image');
             if (validationError) {
               console.error(`Variant ${index} image validation error:`, validationError);
             } else {
               variantImageUrl = await saveUploadedFile(variantImageFile);
-              console.log(`Variant ${index} image saved:`, variantImageUrl);
             }
           }
 
           return {
-            ...variant,
+            ...v,
             _id: new ObjectId().toString(),
-            image: variantImageUrl, // Update with new image URL
+            image: variantImageUrl,
           };
         })
       );
     } else {
-      variants = []; // Clear variants for simple products
+      variants = [];
     }
 
     // Validate discount price
@@ -408,8 +362,6 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-
-    console.log('Creating product with variants:', variants);
 
     const result = await db.collection('products').insertOne(productData);
     return NextResponse.json({
@@ -519,20 +471,17 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
       // Process variant images
       variants = await Promise.all(
-        variants.map(async (variant: any, index: number) => {
-          // Check for variant image file
+        variants.map(async (variant: unknown, index: number) => {
+          const v = variant as ProductVariant;
           const variantImageFile = formData.get(`variantImage-${index}`) as File;
-          let variantImageUrl = variant.image; // Use existing image if available
+          let variantImageUrl = v.image;
 
-          // If there's a new image file, process it
           if (variantImageFile && variantImageFile.size > 0) {
-            console.log(`Processing variant ${index} image:`, variantImageFile.name);
             const validationError = validateFile(variantImageFile, 'image');
             if (validationError) {
               console.error(`Variant ${index} image validation error:`, validationError);
             } else {
               variantImageUrl = await saveUploadedFile(variantImageFile);
-              console.log(`Variant ${index} image saved:`, variantImageUrl);
               
               // Delete old variant image if it exists and is different
               const existingVariant = existingProduct.variants?.[index];
@@ -544,18 +493,17 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             }
           }
 
-          // Preserve the _id if it exists (for updates), otherwise generate new one
-          const variantId = variant._id || new ObjectId().toString();
+          const variantId = v._id || new ObjectId().toString();
 
           return {
-            ...variant,
+            ...v,
             _id: variantId,
-            image: variantImageUrl, // Update with new image URL
+            image: variantImageUrl,
           };
         })
       );
     } else {
-      variants = []; // Clear variants for simple products
+      variants = [];
     }
 
     // Validate discount price
@@ -664,8 +612,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       updatedAt: new Date().toISOString(),
     };
 
-    console.log('Updating product with variants:', variants);
-
     const result = await db.collection('products').updateOne(
       { _id: new ObjectId(params.id) },
       { $set: updateData }
@@ -686,6 +632,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     );
   }
 }
+
 // DELETE product with file cleanup
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
@@ -795,13 +742,12 @@ async function saveUploadedFile(file: File): Promise<string> {
   const filePath = path.join(uploadDir, fileName);
   try {
     await mkdir(uploadDir, { recursive: true });
-  } catch (error: any) {
-    if (error.code !== 'EEXIST') {
+  } catch (error: unknown) {
+    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
       throw error;
     }
   }
   await writeFile(filePath, buffer);
-  console.log(`File saved: ${fileName} (${file.size} bytes)`);
   return `/uploads/${fileName}`;
 }
 
@@ -812,7 +758,7 @@ async function deleteFile(fileUrl: string): Promise<void> {
     const filePath = path.join(process.cwd(), 'public', 'uploads', fileName);
     await unlink(filePath);
   } catch (error) {
-;
+    // Silent fail for file deletion errors
   }
 }
 

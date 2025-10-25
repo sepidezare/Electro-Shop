@@ -1,10 +1,8 @@
-// app/api/public/categories/route.ts
 import clientPromise from '../../../../lib/mongoDb';
-import { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import type { Category } from '../../../../types/category';
-import { ObjectId } from 'mongodb';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db();
@@ -35,20 +33,20 @@ export async function GET(request: NextRequest) {
 
     // Convert flat categories to tree structure
     const buildCategoryTree = (categories: any[]): Category[] => {
-      const categoryMap = new Map();
+      const categoryMap = new Map<string, Category>();
       const roots: Category[] = [];
 
       // Create a map of all categories
-      categories.forEach(category => {
+      categories.forEach((category: any) => {
         const categoryData: Category = {
           id: category._id.toString(),
           name: category.name,
           description: category.description,
-          parentId: category.parentId,
+          parentId: category.parentId ? category.parentId.toString() : null,
           slug: category.slug,
-          image: category.image, // Include the image from database
-          createdAt: category.createdAt,
-          updatedAt: category.updatedAt,
+          image: category.image,
+          createdAt: category.createdAt.toISOString(),
+          updatedAt: category.updatedAt.toISOString(),
           productCount: categoryProductCount[category._id.toString()] || 0,
           children: []
         };
@@ -56,14 +54,14 @@ export async function GET(request: NextRequest) {
       });
 
       // Build the tree structure
-      categories.forEach(category => {
+      categories.forEach((category: any) => {
         const categoryData = categoryMap.get(category._id.toString());
-        if (category.parentId) {
+        if (category.parentId && categoryData) {
           const parent = categoryMap.get(category.parentId.toString());
           if (parent && parent.children) {
             parent.children.push(categoryData);
           }
-        } else {
+        } else if (categoryData) {
           roots.push(categoryData);
         }
       });
@@ -72,11 +70,9 @@ export async function GET(request: NextRequest) {
     };
 
     const categoryTree = buildCategoryTree(categories);
-    console.log('Category tree with images:', categoryTree); 
-
-    return Response.json(categoryTree);
+    return NextResponse.json(categoryTree);
   } catch (error) {
     console.error('Categories fetch error:', error);
-    return Response.json([], { status: 500 });
+    return NextResponse.json([], { status: 500 });
   }
 }

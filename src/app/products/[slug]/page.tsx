@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Product } from "@/types/product";
 import ProductDetails from "@/components/Products/ProductDetails";
+import Link from "next/link";
 
 // Your existing fetchProduct function with better error handling
 const fetchProduct = async (identifier: string): Promise<Product | null> => {
@@ -97,16 +98,16 @@ export default function ProductDetailPage() {
           <p className="text-gray-600">
             {error || "The product you're looking for doesn't exist."}
           </p>
-          <a
+          <Link
             href="/"
             className="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
             Go Back Home
-          </a>
+          </Link>
         </div>
       </div>
     );
   }
 
-  return <ProductDetails product={product} similarProducts={similarProducts} />;
+  return <ProductDetails product={product} />;
 }

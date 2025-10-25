@@ -1,6 +1,5 @@
-// src/app/api/public/products/[slug]/reviews/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { ReviewSubmission } from '@/types/product';
+import { ReviewSubmission, ProductReview } from '@/types/product';
 import fs from 'fs';
 import path from 'path';
 
@@ -16,12 +15,12 @@ const ensureDataDirectory = () => {
 };
 
 // Read reviews from file
-const readReviews = () => {
+const readReviews = (): ProductReview[] => {
   try {
     ensureDataDirectory();
     if (fs.existsSync(reviewsFilePath)) {
       const data = fs.readFileSync(reviewsFilePath, 'utf8');
-      return JSON.parse(data);
+      return JSON.parse(data) as ProductReview[];
     }
   } catch (error) {
     console.error('Error reading reviews file:', error);
@@ -30,7 +29,7 @@ const readReviews = () => {
 };
 
 // Write reviews to file
-const writeReviews = (reviews: any[]) => {
+const writeReviews = (reviews: ProductReview[]) => {
   try {
     ensureDataDirectory();
     fs.writeFileSync(reviewsFilePath, JSON.stringify(reviews, null, 2));
@@ -62,10 +61,11 @@ export async function POST(
       );
     }
 
-    // Create the review object
-    const newReview = {
+    // Create the review object with userId (you can generate one or use a placeholder)
+    const newReview: ProductReview = {
       id: Date.now().toString(),
       ...reviewData,
+      userId: reviewData.userId || `user-${Date.now()}`, // Add userId, use existing or generate one
       createdAt: new Date().toISOString(),
       verified: true,
       helpful: 0,
@@ -76,9 +76,6 @@ export async function POST(
     const reviews = readReviews();
     reviews.push(newReview);
     writeReviews(reviews);
-
-    console.log('Review saved successfully:', newReview.id);
-    console.log('Total reviews in database:', reviews.length);
 
     return NextResponse.json(newReview, { status: 201 });
   } catch (error) {
@@ -99,9 +96,7 @@ export async function GET(
 
     // Read reviews from file and filter by product slug
     const reviews = readReviews();
-    const productReviews = reviews.filter((review: any) => review.productSlug === productSlug);
-
-    console.log(`Found ${productReviews.length} reviews for product: ${productSlug}`);
+    const productReviews = reviews.filter((review: ProductReview) => review.productSlug === productSlug);
 
     return NextResponse.json(productReviews);
   } catch (error) {

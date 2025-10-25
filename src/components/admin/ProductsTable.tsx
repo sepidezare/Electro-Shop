@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { Product } from '../../types/product';
-import { useState } from 'react';
+import Link from "next/link";
+import { Product } from "../../types/product";
+import { useState } from "react";
 
 interface ProductsTableProps {
   products: Product[];
@@ -12,25 +13,25 @@ export default function ProductsTable({ products }: ProductsTableProps) {
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleDelete = async (productId: string) => {
-    if (!confirm('Are you sure you want to delete this product?')) {
+    if (!confirm("Are you sure you want to delete this product?")) {
       return;
     }
 
     setLoading(productId);
-    
+
     try {
       const response = await fetch(`/api/admin/products/${productId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (response.ok) {
-        setCurrentProducts(prev => prev.filter(p => p._id !== productId));
+        setCurrentProducts((prev) => prev.filter((p) => p._id !== productId));
       } else {
-        alert('Failed to delete product');
+        alert("Failed to delete product");
       }
     } catch (error) {
-      console.error('Error deleting product:', error);
-      alert('Error deleting product');
+      console.error("Error deleting product:", error);
+      alert("Error deleting product");
     } finally {
       setLoading(null);
     }
@@ -84,26 +85,26 @@ export default function ProductsTable({ products }: ProductsTableProps) {
                 <span
                   className={`inline-flex px-2 text-xs font-semibold rounded-full ${
                     product.inStock
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
                   }`}
                 >
-                  {product.inStock ? 'In Stock' : 'Out of Stock'}
+                  {product.inStock ? "In Stock" : "Out of Stock"}
                 </span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                <a
+                <Link
                   href={`/admin/products/edit/${product._id}`}
                   className="text-indigo-600 hover:text-indigo-900"
                 >
                   Edit
-                </a>
+                </Link>
                 <button
                   onClick={() => handleDelete(product._id)}
                   disabled={loading === product._id}
                   className="text-red-600 hover:text-red-900 disabled:opacity-50"
                 >
-                  {loading === product._id ? 'Deleting...' : 'Delete'}
+                  {loading === product._id ? "Deleting..." : "Delete"}
                 </button>
               </td>
             </tr>
@@ -114,12 +115,12 @@ export default function ProductsTable({ products }: ProductsTableProps) {
       {currentProducts.length === 0 && (
         <div className="text-center py-8">
           <p className="text-gray-500">No products found.</p>
-          <a
+          <Link
             href="/admin/products/new"
             className="text-indigo-600 hover:text-indigo-900 mt-2 inline-block"
           >
             Add your first product
-          </a>
+          </Link>
         </div>
       )}
     </div>

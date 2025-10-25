@@ -136,7 +136,6 @@ export default function ShopPage() {
   }, [fetchData]);
 
   // Handle category parameter from URL
-  // In your ShopPage component
   useEffect(() => {
     if (categoryParam && categories.length > 0) {
       // Recursive function to find category by slug in the entire tree
@@ -195,6 +194,9 @@ export default function ShopPage() {
     [categories]
   );
 
+  // Define sortable field types
+  type SortableField = string | number | boolean;
+
   // Memoized filter and sort logic
   const applyFiltersAndSorting = useCallback(
     (
@@ -244,8 +246,8 @@ export default function ShopPage() {
 
       // Apply sorting
       return result.sort((a, b) => {
-        let aValue: any = a;
-        let bValue: any = b;
+        let aValue: SortableField;
+        let bValue: SortableField;
 
         switch (sortBy) {
           case "name":
@@ -265,6 +267,9 @@ export default function ShopPage() {
             bValue = b.featuredProduct ? 1 : 0;
             break;
           default:
+            // Default to name sorting if unknown sortBy
+            aValue = a.name.toLowerCase();
+            bValue = b.name.toLowerCase();
             break;
         }
 
@@ -548,8 +553,7 @@ export default function ShopPage() {
                     key={categoryId}
                     className="inline-flex items-center gap-1 bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full"
                   >
-                    {getCategoryName(categoryId)}{" "}
-                    {/* This should now show the category name */}
+                    {getCategoryName(categoryId)}
                     <button
                       onClick={() =>
                         setSelectedCategories((prev) =>
@@ -586,7 +590,7 @@ export default function ShopPage() {
                 )}
                 {todayOfferOnly && (
                   <span className="inline-flex items-center gap-1 bg-red-100 text-red-800 text-sm px-3 py-1 rounded-full">
-                    Today's Offer
+                    Today&apos;s Offer
                     <button
                       onClick={() => setTodayOfferOnly(false)}
                       className="hover:text-red-600"

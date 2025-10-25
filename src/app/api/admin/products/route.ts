@@ -32,8 +32,19 @@ const UPLOAD_CONFIG = {
   },
 };
 
+// Define attribute types
+interface ProductAttribute {
+  name: string;
+  values: string[];
+}
+
+interface VariantAttribute {
+  name: string;
+  value: string;
+}
+
 // Validate attributes structure
-function validateAttributes(attributes: any): attributes is Array<{ name: string; values: string[] }> {
+function validateAttributes(attributes: unknown): attributes is ProductAttribute[] {
   if (!Array.isArray(attributes)) {
     return false;
   }
@@ -41,41 +52,46 @@ function validateAttributes(attributes: any): attributes is Array<{ name: string
     (attr) =>
       typeof attr === 'object' &&
       attr !== null &&
-      typeof attr.name === 'string' &&
-      attr.name.trim() !== '' &&
-      Array.isArray(attr.values) &&
-      attr.values.every((value: any) => typeof value === 'string' && value.trim() !== '')
+      typeof (attr as ProductAttribute).name === 'string' &&
+      (attr as ProductAttribute).name.trim() !== '' &&
+      Array.isArray((attr as ProductAttribute).values) &&
+      (attr as ProductAttribute).values.every((value: unknown) => typeof value === 'string' && value.trim() !== '')
   );
 }
 
 // Validate variant attributes
 function validateVariantAttributes(
-  variants: any[],
-  productAttributes: Array<{ name: string; values: string[] }>
+  variants: unknown[],
+  productAttributes: ProductAttribute[]
 ): variants is ProductVariant[] {
   if (!Array.isArray(variants)) {
     return false;
   }
+  
   const productAttrNames = new Set(productAttributes.map((attr) => attr.name));
+  
   return variants.every((variant) => {
-    if (!variant || typeof variant !== 'object') return false;
-    if (typeof variant.name !== 'string' || variant.name.trim() === '') return false;
-    if (typeof variant.price !== 'number' || variant.price <= 0) return false;
-    if (typeof variant.inStock !== 'boolean') return false;
-    if (typeof variant.stockQuantity !== 'number' || variant.stockQuantity < 0) return false;
-    if (!Array.isArray(variant.specifications)) return false;
-    if (!Array.isArray(variant.attributes)) return false;
+    const v = variant as ProductVariant;
+    
+    if (!v || typeof v !== 'object') return false;
+    if (typeof v.name !== 'string' || v.name.trim() === '') return false;
+    if (typeof v.price !== 'number' || v.price <= 0) return false;
+    if (typeof v.inStock !== 'boolean') return false;
+    if (typeof v.stockQuantity !== 'number' || v.stockQuantity < 0) return false;
+    if (!Array.isArray(v.specifications)) return false;
+    if (!Array.isArray(v.attributes)) return false;
 
-    const variantAttrNames = new Set(variant.attributes.map((attr: any) => attr.name));
+    const variantAttrNames = new Set(v.attributes.map((attr: unknown) => (attr as VariantAttribute).name));
+    
     return (
-      variant.attributes.every(
-        (attr: any) =>
+      v.attributes.every(
+        (attr: unknown) =>
           typeof attr === 'object' &&
           attr !== null &&
-          typeof attr.name === 'string' &&
-          attr.name.trim() !== '' &&
-          typeof attr.value === 'string' &&
-          attr.value.trim() !== ''
+          typeof (attr as VariantAttribute).name === 'string' &&
+          (attr as VariantAttribute).name.trim() !== '' &&
+          typeof (attr as VariantAttribute).value === 'string' &&
+          (attr as VariantAttribute).value.trim() !== ''
       ) &&
       productAttrNames.size === variantAttrNames.size &&
       [...productAttrNames].every((name) => variantAttrNames.has(name))
@@ -130,9 +146,9 @@ export async function GET() {
       seoDescription: product.seoDescription || '',
       attributes: product.attributes || [],
       specifications: product.specifications || [],
-      variants: (product.variants || []).map((variant: any) => ({
-        ...variant,
-        _id: variant._id.toString(),
+      variants: (product.variants || []).map((variant: unknown) => ({
+        ...(variant as ProductVariant),
+        _id: (variant as ProductVariant)._id?.toString() || new ObjectId().toString(),
       })),
       todayOffer: product.todayOffer || false,
       featuredProduct: product.featuredProduct || false,
@@ -238,8 +254,8 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Invalid variant attributes format' }, { status: 400 });
       }
       // Assign proper ObjectIds to variations
-      variants = variants.map((variant: any) => ({
-        ...variant,
+      variants = variants.map((variant: unknown) => ({
+        ...(variant as ProductVariant),
         _id: new ObjectId().toString(),
       }));
     } else {
@@ -461,9 +477,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
         return NextResponse.json({ error: 'Invalid variant attributes format' }, { status: 400 });
       }
       // Assign proper ObjectIds to new variations
-      variants = variants.map((variant: any) => ({
-        ...variant,
-        _id: variant._id.startsWith('temp-') ? new ObjectId().toString() : variant._id,
+      variants = variants.map((variant: unknown) => ({
+        ...(variant as ProductVariant),
+        _id: (variant as ProductVariant)._id?.startsWith('temp-') ? new ObjectId().toString() : (variant as ProductVariant)._id,
       }));
     } else {
       variants = []; // Clear variants for simple products
@@ -672,8 +688,8 @@ async function saveUploadedFile(file: File): Promise<string> {
   const filePath = path.join(uploadDir, fileName);
   try {
     await mkdir(uploadDir, { recursive: true });
-  } catch (error: any) {
-    if (error.code !== 'EEXIST') {
+  } catch (error: unknown) {
+    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
       throw error;
     }
   }
