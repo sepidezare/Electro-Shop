@@ -9,6 +9,7 @@ interface SortDropdownProps {
   sortOrder: "asc" | "desc";
   setSortOrder: (value: "asc" | "desc") => void;
 }
+
 // In your shop page or sorting utility, update the sort functions:
 const sortProducts = (
   products: Product[],
@@ -27,8 +28,9 @@ const sortProducts = (
         bValue = bPriceRange.min;
         break;
       case "rating":
-        aValue = a.rating;
-        bValue = b.rating;
+        // Handle undefined ratings by providing default values
+        aValue = a.rating || 0;
+        bValue = b.rating || 0;
         break;
       case "name":
         return sortOrder === "asc"
@@ -45,6 +47,7 @@ const sortProducts = (
     }
   });
 };
+
 export default function SortDropdown({
   sortBy,
   setSortBy,
