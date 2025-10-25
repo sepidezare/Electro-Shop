@@ -40,10 +40,10 @@ const writeReviews = (reviews: ProductReview[]) => {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const productSlug = params.slug;
+    const { slug: productSlug } = await params;
     const reviewData: ReviewSubmission = await request.json();
 
     // Validate the review data
@@ -89,10 +89,10 @@ export async function POST(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const productSlug = params.slug;
+    const { slug: productSlug } = await params;
 
     // Read reviews from file and filter by product slug
     const reviews = readReviews();
