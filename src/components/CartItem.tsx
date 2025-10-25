@@ -31,14 +31,14 @@ export default function CartItem({
         {/* Quantity Controls */}
         <div className="flex items-center border border-gray-300 rounded-lg">
           <button
-            onClick={() => onUpdateQuantity(product.id, quantity - 1)}
+            onClick={() => onUpdateQuantity(product._id, quantity - 1)}
             className="px-3 py-1 hover:bg-gray-100 transition-colors"
           >
             -
           </button>
           <span className="px-3 py-1 border-x border-gray-300">{quantity}</span>
           <button
-            onClick={() => onUpdateQuantity(product.id, quantity + 1)}
+            onClick={() => onUpdateQuantity(product._id, quantity + 1)}
             className="px-3 py-1 hover:bg-gray-100 transition-colors"
           >
             +
@@ -52,7 +52,7 @@ export default function CartItem({
 
         {/* Remove Button */}
         <button
-          onClick={() => onRemove(product.id)}
+          onClick={() => onRemove(product._id)}
           className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
         >
           🗑️
