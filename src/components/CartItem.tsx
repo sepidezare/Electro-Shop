@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { CartItem as CartItemType } from '@/types/product';
+import { CartItem as CartItemType } from "@/types/cart";
 
 interface CartItemProps {
   item: CartItemType;
@@ -8,7 +8,11 @@ interface CartItemProps {
   onUpdateQuantity: (productId: string, quantity: number) => void;
 }
 
-export default function CartItem({ item, onRemove, onUpdateQuantity }: CartItemProps) {
+export default function CartItem({
+  item,
+  onRemove,
+  onUpdateQuantity,
+}: CartItemProps) {
   const { product, quantity } = item;
 
   return (
@@ -32,9 +36,7 @@ export default function CartItem({ item, onRemove, onUpdateQuantity }: CartItemP
           >
             -
           </button>
-          <span className="px-3 py-1 border-x border-gray-300">
-            {quantity}
-          </span>
+          <span className="px-3 py-1 border-x border-gray-300">{quantity}</span>
           <button
             onClick={() => onUpdateQuantity(product.id, quantity + 1)}
             className="px-3 py-1 hover:bg-gray-100 transition-colors"
