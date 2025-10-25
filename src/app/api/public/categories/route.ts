@@ -1,6 +1,18 @@
 import clientPromise from '../../../../lib/mongoDb';
 import { NextResponse } from 'next/server';
 import type { Category } from '../../../../types/category';
+import { ObjectId, WithId, Document } from 'mongodb';
+
+interface MongoCategory {
+  _id: ObjectId;
+  name: string;
+  description?: string;
+  parentId?: ObjectId | null;
+  slug: string;
+  image?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export async function GET() {
   try {
@@ -32,21 +44,22 @@ export async function GET() {
     });
 
     // Convert flat categories to tree structure
-    const buildCategoryTree = (categories: any[]): Category[] => {
+    const buildCategoryTree = (categories: WithId<Document>[]): Category[] => {
       const categoryMap = new Map<string, Category>();
       const roots: Category[] = [];
 
       // Create a map of all categories
-      categories.forEach((category: any) => {
+      categories.forEach((category: WithId<Document>) => {
+        // Type assertion with runtime validation
         const categoryData: Category = {
           id: category._id.toString(),
-          name: category.name,
-          description: category.description,
+          name: category.name as string,
+          description: category.description as string | undefined,
           parentId: category.parentId ? category.parentId.toString() : null,
-          slug: category.slug,
-          image: category.image,
-          createdAt: category.createdAt.toISOString(),
-          updatedAt: category.updatedAt.toISOString(),
+          slug: category.slug as string,
+          image: category.image as string | undefined,
+          createdAt: (category.createdAt as Date).toISOString(),
+          updatedAt: (category.updatedAt as Date).toISOString(),
           productCount: categoryProductCount[category._id.toString()] || 0,
           children: []
         };
@@ -54,7 +67,7 @@ export async function GET() {
       });
 
       // Build the tree structure
-      categories.forEach((category: any) => {
+      categories.forEach((category: WithId<Document>) => {
         const categoryData = categoryMap.get(category._id.toString());
         if (category.parentId && categoryData) {
           const parent = categoryMap.get(category.parentId.toString());
