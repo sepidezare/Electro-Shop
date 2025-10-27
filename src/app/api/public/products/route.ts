@@ -1,10 +1,11 @@
+//src/app/api/public/products/route.ts
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongoDb';
 
 export async function GET() {
   try {
     const client = await clientPromise;
-    const db = client.db('myDB'); 
+    const db = client.db(); 
     const products = await db
       .collection('products')
       .find({})
