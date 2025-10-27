@@ -1,0 +1,880 @@
+[{
+  "_id": {
+    "$oid": "68f31c1e9db6460620fab3ca"
+  },
+  "name": "Vinova Dolor Note 10 Battery 120W Fast Charging",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet suscipit neque. Praesent quis sapien semper, pulvinar est a, vulputate diam. Nam volutpat, ante ac pellentesque suscipit, tellus justo elementum lorem, sit amet suscipit dui urna id.",
+  "price": 350,
+  "categories": [
+    "68f31ad39db6460620fab3c5"
+  ],
+  "image": "/uploads/1760762910906-1-40.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [],
+  "createdAt": {
+    "$date": "2025-10-18T04:48:30.910Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-18T04:55:29.900Z"
+  },
+  "discountPrice": 0
+},
+{
+  "_id": {
+    "$oid": "68f31e349db6460620fab3cb"
+  },
+  "name": "Vinova 23 Triple Nascetur NFC Donec ROM Celulares",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet suscipit neque. Praesent quis sapien semper, pulvinar est a, vulputate diam. Nam volutpat, ante ac pellentesque suscipit, tellus justo elementum lorem, sit amet suscipit dui urna id.",
+  "price": 196,
+  "categories": [
+    "68f31ad39db6460620fab3c5"
+  ],
+  "image": "/uploads/1760763444957-1-39.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [],
+  "createdAt": {
+    "$date": "2025-10-18T04:57:24.972Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-18T04:57:24.972Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "68f3204d9db6460620fab3cd"
+  },
+  "name": "Smartphone Nova Mate 50 Pro Snapdragon 888",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet suscipit neque. Praesent quis sapien semper, pulvinar est a, vulputate diam. Nam volutpat, ante ac pellentesque suscipit, tellus justo elementum lorem, sit amet suscipit dui urna id.\r\n\r\n",
+  "price": 164,
+  "categories": [
+    "68f31ad39db6460620fab3c5"
+  ],
+  "image": "/uploads/1760763981981-1-38.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [],
+  "createdAt": {
+    "$date": "2025-10-18T05:06:21.989Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-18T05:06:21.989Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "68f320829db6460620fab3ce"
+  },
+  "name": "Original S24 Ultra 16GB 512GB Smartphone",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet suscipit neque. Praesent quis sapien semper, pulvinar est a, vulputate diam. Nam volutpat, ante ac pellentesque suscipit, tellus justo elementum lorem, sit amet suscipit dui urna id.",
+  "price": 155.99,
+  "categories": [
+    "68f45a5b8fd211ee23e739ca"
+  ],
+  "image": "/uploads/1760764034161-1-37.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [
+    {
+      "url": "/uploads/1760764034166-1-37.webp",
+      "type": "image",
+      "name": "1-37.webp",
+      "size": 33608,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1760764034177-1-38.webp",
+      "type": "image",
+      "name": "1-38.webp",
+      "size": 57930,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1760764034185-1-39.webp",
+      "type": "image",
+      "name": "1-39.webp",
+      "size": 20466,
+      "mimeType": "image/webp"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-18T05:07:14.198Z"
+  },
+  "updatedAt": "2025-10-22T08:19:50.325Z",
+  "discountPrice": 0,
+  "attributes": [],
+  "brand": "",
+  "dimensions": {
+    "width": 0,
+    "height": 0,
+    "depth": 0
+  },
+  "featuredProduct": false,
+  "hasChange": false,
+  "hasGuarantee": false,
+  "hasReferal": false,
+  "seoDescription": "",
+  "seoTitle": "",
+  "shippingClass": "",
+  "sku": "",
+  "slug": "original-s24-ultra-16gb-512gb-smartphone",
+  "specifications": [],
+  "stockQuantity": 0,
+  "todayOffer": false,
+  "type": "simple",
+  "variants": [],
+  "weight": 0
+},
+{
+  "_id": {
+    "$oid": "68f320b59db6460620fab3cf"
+  },
+  "name": "Nova A12 Factory Unlocked 4G/LTE Smartphone",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet suscipit neque. Praesent quis sapien semper, pulvinar est a, vulputate diam. Nam volutpat, ante ac pellentesque suscipit, tellus justo elementum lorem, sit amet suscipit dui urna id.\r\n\r\n",
+  "price": 286,
+  "categories": [
+    "68f31ad39db6460620fab3c5"
+  ],
+  "image": "/uploads/1760764085438-2-33.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [
+    {
+      "url": "/uploads/1760764085446-2-33.webp",
+      "type": "image",
+      "name": "2-33.webp",
+      "size": 46182,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1760764085453-1-37.webp",
+      "type": "image",
+      "name": "1-37.webp",
+      "size": 33608,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1760764085465-1-38.webp",
+      "type": "image",
+      "name": "1-38.webp",
+      "size": 57930,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1760764085471-1-39.webp",
+      "type": "image",
+      "name": "1-39.webp",
+      "size": 20466,
+      "mimeType": "image/webp"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-18T05:08:05.490Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-18T05:08:05.490Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "68f320e79db6460620fab3d0"
+  },
+  "name": "Gaming Headset with Mic for Xbox One PS4 Switch",
+  "description": "Gaming Headset with Mic for Xbox One PS4 Switch",
+  "price": 199.99,
+  "categories": [
+    "68f31b429db6460620fab3c8"
+  ],
+  "image": "/uploads/1760764135673-1-13.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [],
+  "createdAt": {
+    "$date": "2025-10-18T05:08:55.681Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-18T05:08:55.681Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "68f321359db6460620fab3d1"
+  },
+  "name": "Wage Universal Wired Surround Gaming Headset",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet suscipit neque. Praesent quis sapien semper, pulvinar est a, vulputate diam. Nam volutpat, ante ac pellentesque suscipit, tellus justo elementum lorem, sit amet suscipit dui urna id.",
+  "price": 230,
+  "categories": [
+    "68f31b429db6460620fab3c8"
+  ],
+  "image": "/uploads/1760764213671-purple-1.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [
+    {
+      "url": "/uploads/1760764213677-black-3.webp",
+      "type": "image",
+      "name": "black-3.webp",
+      "size": 21078,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1760764213686-purple-1.webp",
+      "type": "image",
+      "name": "purple-1.webp",
+      "size": 17664,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1760764213697-1-11.webp",
+      "type": "image",
+      "name": "1-11.webp",
+      "size": 13598,
+      "mimeType": "image/webp"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-18T05:10:13.712Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-18T05:10:13.712Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "68f321769db6460620fab3d2"
+  },
+  "name": "Vinova Headphone Sociis Buds T100 Magnis Buds",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet suscipit neque. Praesent quis sapien semper, pulvinar est a, vulputate diam. Nam volutpat, ante ac pellentesque suscipit, tellus justo elementum lorem, sit amet suscipit dui urna id.",
+  "price": 36,
+  "categories": [
+    "68f31b429db6460620fab3c8"
+  ],
+  "image": "/uploads/1760764278744-1-10.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [
+    {
+      "url": "/uploads/1760764278750-white.webp",
+      "type": "image",
+      "name": "white.webp",
+      "size": 12956,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1760764278758-green-1.webp",
+      "type": "image",
+      "name": "green-1.webp",
+      "size": 18364,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1760764278766-1-10.webp",
+      "type": "image",
+      "name": "1-10.webp",
+      "size": 18816,
+      "mimeType": "image/webp"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-18T05:11:18.786Z"
+  },
+  "updatedAt": {
+    "$date": "2025-10-18T05:11:18.786Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "68f322fe9db6460620fab3d3"
+  },
+  "name": "14‑inch MacBook Pro",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi quam risus lacus risus posuere quis hendrerit vestibulum ut sagittis sit amet tortor. Mauris mauris lectus, ornare vel erat non, imperdiet consectetur leo. Nulla non turpis eget ligula ullamcorper tincidunt eget ac orci.",
+  "price": 1250,
+  "categories": [
+    "68f93eeced899a92946be751"
+  ],
+  "image": "/uploads/1760764670155-1-26-1-600x479.png",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [
+    {
+      "url": "/uploads/1760764670162-3-23-1-600x479.png",
+      "type": "image",
+      "name": "3-23-1-600x479.png",
+      "size": 7182,
+      "mimeType": "image/png"
+    },
+    {
+      "url": "/uploads/1760764670176-2-24-1-600x479.png",
+      "type": "image",
+      "name": "2-24-1-600x479.png",
+      "size": 22159,
+      "mimeType": "image/png"
+    },
+    {
+      "url": "/uploads/1760764670182-1-26-1-600x479.png",
+      "type": "image",
+      "name": "1-26-1-600x479.png",
+      "size": 30403,
+      "mimeType": "image/png"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-18T05:17:50.194Z"
+  },
+  "updatedAt": "2025-10-24T14:58:26.558Z",
+  "discountPrice": 0,
+  "attributes": [],
+  "brand": "",
+  "dimensions": {
+    "width": 0,
+    "height": 0,
+    "depth": 0
+  },
+  "featuredProduct": false,
+  "hasChange": false,
+  "hasGuarantee": false,
+  "hasReferal": false,
+  "seoDescription": "",
+  "seoTitle": "",
+  "shippingClass": "",
+  "sku": "",
+  "slug": "14inch-macbook-pro",
+  "specifications": [
+    {
+      "key": "RAM",
+      "value": "256 GB"
+    },
+    {
+      "key": "CPU",
+      "value": "intel"
+    },
+    {
+      "key": "Display",
+      "value": "15.6\""
+    }
+  ],
+  "stockQuantity": 0,
+  "todayOffer": false,
+  "type": "simple",
+  "variants": [],
+  "weight": 0
+},
+{
+  "_id": {
+    "$oid": "68f323a59db6460620fab3d4"
+  },
+  "name": "Xiaomi Redmi Pad 6GB",
+  "description": "Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.\r\n",
+  "price": 590,
+  "categories": [
+    "68f31b1f9db6460620fab3c6",
+    "68f31b239db6460620fab3c7",
+    "68f4591f8fd211ee23e739c7"
+  ],
+  "image": "/uploads/1761030845230-1-26-1-600x479.png",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [
+    {
+      "url": "/uploads/1760764837030-1-41-1-600x479.png",
+      "type": "image",
+      "name": "1-41-1-600x479.png",
+      "size": 43496,
+      "mimeType": "image/png"
+    },
+    {
+      "url": "/uploads/1760764837038-3-23-1-600x479.png",
+      "type": "image",
+      "name": "3-23-1-600x479.png",
+      "size": 7182,
+      "mimeType": "image/png"
+    }
+  ],
+  "createdAt": {
+    "$date": "2025-10-18T05:20:37.052Z"
+  },
+  "updatedAt": "2025-10-24T13:44:15.458Z",
+  "discountPrice": 0,
+  "attributes": [],
+  "brand": "",
+  "dimensions": {
+    "width": 0,
+    "height": 0,
+    "depth": 0
+  },
+  "featuredProduct": false,
+  "hasChange": false,
+  "hasGuarantee": false,
+  "hasReferal": false,
+  "seoDescription": "",
+  "seoTitle": "",
+  "shippingClass": "",
+  "sku": "",
+  "slug": "xiaomi-redmi-pad-6gb",
+  "specifications": [
+    {
+      "key": "RAM",
+      "value": "512"
+    },
+    {
+      "key": "Display",
+      "value": "17\""
+    },
+    {
+      "key": "CPU",
+      "value": "core i7"
+    }
+  ],
+  "stockQuantity": 0,
+  "todayOffer": false,
+  "type": "simple",
+  "variants": [],
+  "weight": 0
+},
+{
+  "_id": {
+    "$oid": "68f8f7cfed899a92946be740"
+  },
+  "name": "Aenean Watch New Special Edition Amolet",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet suscipit neque. Praesent quis sapien semper, pulvinar est a, vulputate diam. Nam volutpat, ante ac pellentesque suscipit, tellus justo elementum lorem, sit amet suscipit dui urna id.\r\n\r\n",
+  "price": 180,
+  "discountPrice": 0,
+  "categories": [
+    "68f60a182741d28f9326bfe7"
+  ],
+  "image": "/uploads/1761146831057-1-23.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [],
+  "type": "simple",
+  "sku": "",
+  "brand": "",
+  "stockQuantity": 0,
+  "weight": 0,
+  "dimensions": {
+    "width": 0,
+    "height": 0,
+    "depth": 0
+  },
+  "shippingClass": "",
+  "hasGuarantee": false,
+  "hasReferal": false,
+  "hasChange": false,
+  "seoTitle": "",
+  "seoDescription": "",
+  "attributes": [],
+  "specifications": [],
+  "variants": [],
+  "todayOffer": false,
+  "featuredProduct": false,
+  "slug": "aenean-watch-new-special-edition-amolet",
+  "createdAt": "2025-10-22T15:27:11.061Z",
+  "updatedAt": "2025-10-22T15:27:11.061Z"
+},
+{
+  "_id": {
+    "$oid": "68f8f840ed899a92946be741"
+  },
+  "name": "Amoled Music Weather Fashion Smart Watch",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet suscipit neque. Praesent quis sapien semper, pulvinar est a, vulputate diam. Nam volutpat, ante ac pellentesque suscipit, tellus justo elementum lorem, sit amet suscipit dui urna id.\r\n\r\n",
+  "price": 144,
+  "discountPrice": 0,
+  "categories": [
+    "68f60a182741d28f9326bfe7"
+  ],
+  "image": "/uploads/1761146944302-2-23-600x600__1_.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [],
+  "type": "simple",
+  "sku": "",
+  "brand": "",
+  "stockQuantity": 0,
+  "weight": 0,
+  "dimensions": {
+    "width": 0,
+    "height": 0,
+    "depth": 0
+  },
+  "shippingClass": "",
+  "hasGuarantee": false,
+  "hasReferal": false,
+  "hasChange": false,
+  "seoTitle": "",
+  "seoDescription": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet suscipit neque. Praesent quis sapien semper, pulvinar est a, vulputate diam. Nam volutpat, ante ac pellentesque suscipit, tellus justo elementum lorem, sit amet suscipit dui urna id.",
+  "attributes": [],
+  "specifications": [],
+  "variants": [],
+  "todayOffer": false,
+  "featuredProduct": false,
+  "slug": "amoled-music-weather-fashion-smart-watch",
+  "createdAt": "2025-10-22T15:29:04.307Z",
+  "updatedAt": "2025-10-22T15:29:04.307Z"
+},
+{
+  "_id": {
+    "$oid": "68f8f872ed899a92946be742"
+  },
+  "name": "Festina Mademoiselle Watch With Case 38mm",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet suscipit neque. Praesent quis sapien semper, pulvinar est a, vulputate diam. Nam volutpat, ante ac pellentesque suscipit, tellus justo elementum lorem, sit amet suscipit dui urna id.",
+  "price": 147,
+  "discountPrice": 134,
+  "categories": [
+    "68f60a182741d28f9326bfe7"
+  ],
+  "image": "/uploads/1761146994682-1-24.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [],
+  "type": "simple",
+  "sku": "",
+  "brand": "",
+  "stockQuantity": 0,
+  "weight": 0,
+  "dimensions": {
+    "width": 0,
+    "height": 0,
+    "depth": 0
+  },
+  "shippingClass": "",
+  "hasGuarantee": false,
+  "hasReferal": false,
+  "hasChange": false,
+  "seoTitle": "",
+  "seoDescription": "",
+  "attributes": [],
+  "specifications": [],
+  "variants": [],
+  "todayOffer": false,
+  "featuredProduct": false,
+  "slug": "festina-mademoiselle-watch-with-case-38mm",
+  "createdAt": "2025-10-22T15:29:54.686Z",
+  "updatedAt": "2025-10-22T15:29:54.686Z"
+},
+{
+  "_id": {
+    "$oid": "68f8f8e2ed899a92946be746"
+  },
+  "name": "Garmin Lily Smart Watch Italian Leather Band",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet suscipit neque. Praesent quis sapien semper, pulvinar est a, vulputate diam. Nam volutpat, ante ac pellentesque suscipit, tellus justo elementum lorem, sit amet suscipit dui urna id.\r\n\r\n",
+  "price": 0,
+  "discountPrice": 0,
+  "categories": [
+    "68f60a182741d28f9326bfe7"
+  ],
+  "image": "/uploads/1761147106228-smart-watch__2_.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [
+    {
+      "url": "/uploads/1761216261817-2-23-600x600__1_.webp",
+      "type": "image",
+      "name": "2-23-600x600 (1).webp",
+      "size": 17630,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761216261822-2-22-600x600.webp",
+      "type": "image",
+      "name": "2-22-600x600.webp",
+      "size": 24546,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761216261830-smart-watch__2_.webp",
+      "type": "image",
+      "name": "smart-watch (2).webp",
+      "size": 92884,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761216273091-2-23-600x600__1_.webp",
+      "type": "image",
+      "name": "2-23-600x600 (1).webp",
+      "size": 17630,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761216273154-2-22-600x600.webp",
+      "type": "image",
+      "name": "2-22-600x600.webp",
+      "size": 24546,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761216273160-smart-watch__2_.webp",
+      "type": "image",
+      "name": "smart-watch (2).webp",
+      "size": 92884,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761216273167-white-3.webp",
+      "type": "image",
+      "name": "white-3.webp",
+      "size": 35844,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761216273266-1-24.webp",
+      "type": "image",
+      "name": "1-24.webp",
+      "size": 36722,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761216273299-1-29.webp",
+      "type": "image",
+      "name": "1-29.webp",
+      "size": 107560,
+      "mimeType": "image/webp"
+    }
+  ],
+  "type": "variable",
+  "sku": "",
+  "brand": "",
+  "stockQuantity": 0,
+  "weight": 0,
+  "dimensions": {
+    "width": 0,
+    "height": 0,
+    "depth": 0
+  },
+  "shippingClass": "",
+  "hasGuarantee": false,
+  "hasReferal": false,
+  "hasChange": false,
+  "seoTitle": "",
+  "seoDescription": "",
+  "attributes": [],
+  "specifications": [
+    {
+      "key": "color",
+      "value": "black,silver,red"
+    },
+    {
+      "key": "material",
+      "value": "plastic"
+    }
+  ],
+  "variants": [
+    {
+      "_id": "68fa3d18353c32a250e8c7cd",
+      "name": "silverddd",
+      "sku": "",
+      "price": 134,
+      "discountPrice": 0,
+      "inStock": true,
+      "stockQuantity": 0,
+      "image": "",
+      "attributes": [
+        {
+          "name": "color",
+          "value": "silver"
+        }
+      ],
+      "specifications": [],
+      "additionalMedia": []
+    },
+    {
+      "_id": "68fa3d18353c32a250e8c7ce",
+      "name": "blacks",
+      "sku": "",
+      "price": 777,
+      "discountPrice": 0,
+      "inStock": true,
+      "stockQuantity": 0,
+      "image": "",
+      "attributes": [
+        {
+          "name": "color",
+          "value": "black"
+        }
+      ],
+      "specifications": [],
+      "additionalMedia": []
+    }
+  ],
+  "todayOffer": false,
+  "featuredProduct": false,
+  "slug": "garmin-lily-smart-watch-italian-leather-band",
+  "createdAt": "2025-10-22T15:31:46.232Z",
+  "updatedAt": "2025-10-23T15:50:12.882Z"
+},
+{
+  "_id": {
+    "$oid": "68f8f910ed899a92946be747"
+  },
+  "name": "Luxury Stainless Steel Custom Bands Ultra Woman",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sit amet suscipit neque. Praesent quis sapien semper, pulvinar est a, vulputate diam. Nam volutpat, ante ac pellentesque suscipit, tellus justo elementum lorem, sit amet suscipit dui urna id.\r\n\r\n",
+  "price": 153,
+  "discountPrice": 0,
+  "categories": [
+    "68f60a182741d28f9326bfe7"
+  ],
+  "image": "/uploads/1761147152219-1-27.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [],
+  "type": "simple",
+  "sku": "",
+  "brand": "",
+  "stockQuantity": 0,
+  "weight": 0,
+  "dimensions": {
+    "width": 0,
+    "height": 0,
+    "depth": 0
+  },
+  "shippingClass": "",
+  "hasGuarantee": false,
+  "hasReferal": false,
+  "hasChange": false,
+  "seoTitle": "",
+  "seoDescription": "",
+  "attributes": [],
+  "specifications": [],
+  "variants": [],
+  "todayOffer": false,
+  "featuredProduct": false,
+  "slug": "luxury-stainless-steel-custom-bands-ultra-woman",
+  "createdAt": "2025-10-22T15:32:32.224Z",
+  "updatedAt": "2025-10-22T15:32:32.224Z"
+},
+{
+  "_id": {
+    "$oid": "68fa6aa3353c32a250e8c7d9"
+  },
+  "name": "nnnnnnnn",
+  "description": "gdfg",
+  "price": 0,
+  "discountPrice": 0,
+  "categories": [
+    "68f60a182741d28f9326bfe7"
+  ],
+  "image": "/uploads/1761241763184-1-29.webp",
+  "inStock": true,
+  "rating": 0,
+  "additionalMedia": [
+    {
+      "url": "/uploads/1761287181400-white-3.webp",
+      "type": "image",
+      "name": "white-3.webp",
+      "size": 35844,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761287181404-1-26.webp",
+      "type": "image",
+      "name": "1-26.webp",
+      "size": 21674,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761287181408-3-20.webp",
+      "type": "image",
+      "name": "3-20.webp",
+      "size": 38944,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761287181419-grey-2.webp",
+      "type": "image",
+      "name": "grey-2.webp",
+      "size": 31168,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761287181438-1-23__1_.webp",
+      "type": "image",
+      "name": "1-23 (1).webp",
+      "size": 36058,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761287181455-1-29.webp",
+      "type": "image",
+      "name": "1-29.webp",
+      "size": 107560,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761287252121-1-24.webp",
+      "type": "image",
+      "name": "1-24.webp",
+      "size": 36722,
+      "mimeType": "image/webp"
+    },
+    {
+      "url": "/uploads/1761316181696-Untitled_design__17_.png",
+      "type": "image",
+      "name": "Untitled design (17).png",
+      "size": 1100827,
+      "mimeType": "image/png"
+    }
+  ],
+  "type": "variable",
+  "sku": "",
+  "brand": "",
+  "stockQuantity": 0,
+  "weight": 0,
+  "dimensions": {
+    "width": 0,
+    "height": 0,
+    "depth": 0
+  },
+  "shippingClass": "",
+  "hasGuarantee": false,
+  "hasReferal": false,
+  "hasChange": false,
+  "seoTitle": "",
+  "seoDescription": "",
+  "attributes": [],
+  "specifications": [],
+  "variants": [
+    {
+      "_id": "68fa6aa3353c32a250e8c7d7",
+      "name": "black",
+      "sku": "",
+      "price": 66,
+      "discountPrice": 0,
+      "inStock": true,
+      "stockQuantity": 0,
+      "specifications": [],
+      "image": "/uploads/1761241839808-black-11.webp",
+      "additionalMedia": [],
+      "attributes": [
+        {
+          "name": "df",
+          "value": "ds"
+        }
+      ],
+      "hasNewImage": false
+    },
+    {
+      "_id": "68fa6aa3353c32a250e8c7d8",
+      "name": "silver",
+      "sku": "",
+      "price": 33,
+      "discountPrice": 0,
+      "inStock": true,
+      "stockQuantity": 0,
+      "specifications": [],
+      "image": "/uploads/1761241839809-white-4.webp",
+      "additionalMedia": [],
+      "attributes": [
+        {
+          "name": "df",
+          "value": "fsdfsd"
+        }
+      ],
+      "hasNewImage": false
+    }
+  ],
+  "todayOffer": false,
+  "featuredProduct": false,
+  "slug": "nnnnnnnn",
+  "createdAt": "2025-10-23T17:49:23.189Z",
+  "updatedAt": "2025-10-24T14:36:15.518Z"
+}]
