@@ -28,7 +28,6 @@ export default function BestSellerCarousel({
   seeAllLink,
   limit = 8,
   autoTitle = true,
-  description = "Discover our latest amazing collection of products with great deals and discounts",
 }: BestSellerCarouselProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -92,16 +91,8 @@ export default function BestSellerCarousel({
     return "/shop";
   };
 
-  const getDisplayDescription = () => {
-    if (resolvedCategory) {
-      return `Discover our amazing collection of ${resolvedCategory} with great deals and discounts`;
-    }
-    return description;
-  };
-
   const displayTitle = getDisplayTitle();
   const displaySeeAllLink = getSeeAllLink();
-  const displayDescription = getDisplayDescription();
 
   if (loading) {
     return (
@@ -137,7 +128,6 @@ export default function BestSellerCarousel({
           <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 font-jamjuree">
             {displayTitle}
           </h2>
-          <p className="text-gray-600 mt-2 max-w-2xl">{displayDescription}</p>
         </div>
 
         <Link

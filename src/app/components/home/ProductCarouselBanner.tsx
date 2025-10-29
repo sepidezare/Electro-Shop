@@ -292,13 +292,6 @@ export default function ProductCarouselBanner() {
               <h2 className="text-2xl font-bold text-gray-900">
                 Featured Products
               </h2>
-              <p className="text-gray-600 mt-1">
-                {selectedCategory === "all"
-                  ? "All products"
-                  : `Filtered by: ${
-                      categoryMap[selectedCategory] || selectedCategory
-                    }`}
-              </p>
             </div>
 
             {/* Show regular flex layout if no wrapping, carousel if wrapping occurs */}
@@ -484,6 +477,7 @@ export default function ProductCarouselBanner() {
                 spaceBetween={16}
                 slidesPerView={2}
                 slidesPerGroup={2}
+                speed={800}
                 navigation={{
                   nextEl: ".swiper-button-next",
                   prevEl: ".swiper-button-prev",
