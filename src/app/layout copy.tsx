@@ -3,10 +3,10 @@
 import "./globals.css";
 import { CartProvider } from "../context/CartContext";
 import { useEffect, useState } from "react";
-import Footer from "@/components/Footer/Footer";
-import Header from "@/components/Header/Header";
+import Footer from "@/app/components/Footer/Footer";
+import Header from "@/app/components/Header/Header";
 import { Bai_Jamjuree } from "next/font/google";
-import CartSidebar from "@/components/cart/CartSidebar";
+import CartSidebar from "@/app/components/cart/CartSidebar";
 
 const jamjuree = Bai_Jamjuree({
   subsets: ["latin"],

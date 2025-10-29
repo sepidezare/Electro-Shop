@@ -2,11 +2,11 @@
 import "./globals.css";
 import { CartProvider } from "../context/CartContext";
 import { useEffect, useState } from "react";
-import Footer from "@/components/Footer/Footer";
-import Header from "@/components/Header/Header";
-import CartSidebar from "@/components/cart/CartSidebar";
+import Footer from "@/app/components/Footer/Footer";
+import Header from "@/app/components/Header/Header";
+import CartSidebar from "@/app/components/cart/CartSidebar";
 import { ComparisonProvider } from "@/context/ComparisonContext";
-import ComparisonWidget from "@/components/Products/ComparisonWidget";
+import ComparisonWidget from "@/app/components/Products/ComparisonWidget";
 
 export default function RootLayout({
   children,

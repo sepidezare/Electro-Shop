@@ -22,40 +22,36 @@ const NewArrivalsSection = () => {
 
   return (
     <section className="mx-auto px-4 sm:px-6 lg:px-8 py-12 font-jamjuree">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {products.map((product) => (
           <div
             key={product.id}
-            className="relative rounded-xl overflow-hidden shadow-[2px_4px_18px_rgba(0,0,0,0.2)] transition-shadow duration-300 flex flex-col lg:flex-row lg:min-h-110 min-h-50"
+            className="relative rounded-xl overflow-hidden shadow-[2px_4px_18px_rgba(0,0,0,0.2)] flex flex-col justify-end h-[34vh] lg:h-[50vh]"
           >
             {/* Background Image */}
             <div
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+              className="absolute inset-0 bg-cover bg-top bg-no-repeat"
               style={{ backgroundImage: `url(${product.bgImage})` }}
             >
               <div className="absolute inset-0"></div>
             </div>
 
             {/* Content Overlay */}
-            <div className="relative p-10 flex-1 lg:w-1/2 flex flex-col z-10 justify-end">
-              <div>
-                <h3 className="text-3xl font-bold text-white mt-2 mb-4">
-                  {product.name}
-                </h3>
-                <p className="text-md text-white mt-2 mb-4">
-                  {product.description}
-                </p>
-              </div>
+            <div className="relative p-6 lg:p-10 z-10 w-full xl:w-1/2">
+              <h3 className="text-2xl lg:text-3xl font-bold text-white mt-2 mb-4">
+                {product.name}
+              </h3>
+              <p className="text-sm lg:text-md text-white mt-2 mb-6">
+                {product.description}
+              </p>
               <Link
                 href="#"
-                className="text-md font-medium text-white hover:text-blue-400"
+                className="text-md font-medium text-white hover:text-blue-400 inline-flex items-center"
               >
-                Shop Now &#8594;
+                Shop Now
+                <span className="ml-2">&#8594;</span>
               </Link>
             </div>
-
-            {/* Product Image - Right */}
-            <div className="relative h-48 lg:h-auto lg:w-1/2 lg:flex-shrink-0 z-10"></div>
           </div>
         ))}
       </div>

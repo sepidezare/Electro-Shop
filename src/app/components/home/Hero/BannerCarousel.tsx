@@ -13,7 +13,7 @@ interface BannerCarouselProps {
 
 export default function BannerCarousel({ banners }: BannerCarouselProps) {
   return (
-    <div className="w-full h-[570px] rounded-lg overflow-hidden group relative">
+    <div className="w-full h-[70vh] rounded-lg overflow-hidden group relative">
       <Swiper
         spaceBetween={0}
         centeredSlides={true}

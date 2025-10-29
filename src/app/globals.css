@@ -69,12 +69,12 @@ body {
   }
 }
 
-.line-clamp-2 {
+/* .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
+} */
 
 /* Ensure proper z-index stacking */
 /* .relative {
@@ -107,3 +107,5 @@ body {
 .animate-fadeInX {
   animation: fadeInX 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
+
+

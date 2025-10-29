@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { Product } from "@/types/product";
-import ProductDetails from "@/components/Products/ProductDetails";
+import ProductDetails from "@/app/components/Products/ProductDetails";
 import Link from "next/link";
 
 // Your existing fetchProduct function with better error handling

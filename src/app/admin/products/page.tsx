@@ -1,5 +1,5 @@
 import { Product } from "../../../types/product";
-import ProductsTable from "../../../components/admin/ProductsTable";
+import ProductsTable from "@/app/components/admin/ProductsTable";
 import clientPromise from "../../../lib/mongoDb";
 import Link from "next/link";
 

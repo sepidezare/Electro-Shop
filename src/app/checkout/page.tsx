@@ -137,7 +137,7 @@ export default function CheckoutPage() {
             <div className="space-y-3 mb-4">
               {cartItems.map((item) => (
                 <div
-                  key={item.product._id}
+                  key={`${item.product._id}-${item.quantity}`}
                   className="flex justify-between items-center"
                 >
                   <div>

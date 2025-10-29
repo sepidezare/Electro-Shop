@@ -1,3 +1,4 @@
+//src/app/api/public/categories/route.ts
 import clientPromise from '../../../../lib/mongoDb';
 import { NextResponse } from 'next/server';
 import type { Category } from '../../../../types/category';

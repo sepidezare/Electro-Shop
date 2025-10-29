@@ -1,4 +1,4 @@
-// src/components/Products/ProductCard.tsx
+// src/app/components/home/LatestProductCard.tsx
 "use client";
 
 import { Product, ProductVariant } from "@/types/product";
@@ -9,7 +9,7 @@ import QuickViewModal from "../Products/QuickViewModal";
 import { useCart } from "@/context/CartContext";
 import { getProductPriceRange, formatPriceRange } from "@/utils/ProductUtils";
 import CompareButton from "../Products/CompareButton";
-
+import { ShoppingCart, Plus } from "lucide-react";
 interface ProductCardProps {
   product: Product;
 }
@@ -67,7 +67,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <>
       <div
-        className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-3 sm:p-4 md:p-6 flex flex-col h-full relative group/card"
+        className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 p-3 sm:p-4 md:p-6 flex flex-col relative group/card"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -76,18 +76,18 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Wishlist Icon */}
           <div
             className={`relative transition-all duration-300 transform
-                ${
-                  isHovered
-                    ? "translate-x-0 opacity-100"
-                    : "translate-x-4 opacity-0"
-                }`}
+              ${
+                isHovered
+                  ? "translate-x-0 opacity-100"
+                  : "translate-x-4 opacity-0"
+              }`}
             style={{ transitionDelay: "100ms" }}
           >
             {/* The button itself controls tooltip visibility */}
             <button
               onClick={handleWishlist}
               className="relative flex items-center justify-center w-8 h-8 bg-white rounded-full shadow-sm 
-                 hover:bg-gray-50 transition-all duration-300 hover:scale-110 group"
+               hover:bg-gray-50 transition-all duration-300 hover:scale-110 group"
               aria-label="Add to wishlist"
             >
               <svg
@@ -107,14 +107,14 @@ export default function ProductCard({ product }: ProductCardProps) {
               {/* Tooltip - only appears on icon hover */}
               <div
                 className="absolute right-full top-1/2 transform -translate-y-1/2 ml-2 
-                      opacity-0 group-hover:opacity-100 pointer-events-none 
-                      transition-all duration-200 z-50"
+                    opacity-0 group-hover:opacity-100 pointer-events-none 
+                    transition-all duration-200 z-50"
               >
                 <div className="bg-gray-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
                   Add to wishlist
                   <div
                     className="absolute right-full top-1/2 transform -translate-y-1/2 
-                          border-4 border-transparent border-r-gray-900"
+                        border-4 border-transparent border-r-gray-900"
                   ></div>
                 </div>
               </div>
@@ -124,16 +124,16 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Compare Button */}
           <div
             className={`relative transition-all duration-300 transform
-                ${
-                  isHovered
-                    ? "translate-x-0 opacity-100"
-                    : "translate-x-4 opacity-0"
-                }`}
+              ${
+                isHovered
+                  ? "translate-x-0 opacity-100"
+                  : "translate-x-4 opacity-0"
+              }`}
             style={{ transitionDelay: "200ms" }}
           >
             <div
               className="relative flex items-center justify-center w-8 h-8 bg-white rounded-full shadow-sm 
-                 hover:bg-gray-50 transition-all duration-300 hover:scale-110 group"
+               hover:bg-gray-50 transition-all duration-300 hover:scale-110 group"
             >
               <CompareButton
                 product={product}
@@ -145,14 +145,14 @@ export default function ProductCard({ product }: ProductCardProps) {
               {/* Tooltip */}
               <div
                 className="absolute right-full top-1/2 transform -translate-y-1/2 ml-2 
-                      opacity-0 group-hover:opacity-100 pointer-events-none 
-                      transition-all duration-200 z-50"
+                    opacity-0 group-hover:opacity-100 pointer-events-none 
+                    transition-all duration-200 z-50"
               >
                 <div className="bg-gray-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
                   Compare product
                   <div
                     className="absolute right-full top-1/2 transform -translate-y-1/2 
-                          border-4 border-transparent border-r-gray-900"
+                        border-4 border-transparent border-r-gray-900"
                   ></div>
                 </div>
               </div>
@@ -162,17 +162,17 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Quick View Icon */}
           <div
             className={`relative transition-all duration-300 transform
-                ${
-                  isHovered
-                    ? "translate-x-0 opacity-100"
-                    : "translate-x-4 opacity-0"
-                }`}
+              ${
+                isHovered
+                  ? "translate-x-0 opacity-100"
+                  : "translate-x-4 opacity-0"
+              }`}
             style={{ transitionDelay: "300ms" }}
           >
             <button
               onClick={handleQuickView}
               className="relative flex items-center justify-center w-8 h-8 bg-white rounded-full shadow-sm 
-                 hover:bg-gray-50 transition-all duration-300 hover:scale-110 group"
+               hover:bg-gray-50 transition-all duration-300 hover:scale-110 group"
               aria-label="Quick view"
             >
               <svg
@@ -198,14 +198,14 @@ export default function ProductCard({ product }: ProductCardProps) {
               {/* Tooltip */}
               <div
                 className="absolute right-full top-1/2 transform -translate-y-1/2 ml-2 
-                      opacity-0 group-hover:opacity-100 pointer-events-none 
-                      transition-all duration-200 z-50"
+                    opacity-0 group-hover:opacity-100 pointer-events-none 
+                    transition-all duration-200 z-50"
               >
                 <div className="bg-gray-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
                   Quick view
                   <div
                     className="absolute right-full top-1/2 transform -translate-y-1/2 
-                          border-4 border-transparent border-r-gray-900"
+                        border-4 border-transparent border-r-gray-900"
                   ></div>
                 </div>
               </div>
@@ -232,36 +232,6 @@ export default function ProductCard({ product }: ProductCardProps) {
               className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
             />
           </Link>
-
-          {/* Add to Cart Button - Appears on Hover Over Image */}
-          <div
-            className={`absolute bottom-3 left-1/2 transform -translate-x-1/2 transition-all duration-300 ${
-              isHovered
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-4"
-            }`}
-          >
-            <button
-              onClick={handleAddToCartClick}
-              disabled={!product.inStock}
-              className={`w-full
-                px-4 py-2 rounded-lg font-medium transition-all duration-300
-                whitespace-nowrap text-sm shadow-lg
-                transform hover:scale-105 active:scale-95
-                ${
-                  product.inStock
-                    ? "bg-blue-600 hover:bg-blue-700 text-white"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                }
-              `}
-            >
-              {product.inStock
-                ? product.type === "variable"
-                  ? "View Options"
-                  : "Add to Cart"
-                : "Out of Stock"}
-            </button>
-          </div>
         </div>
 
         {/* Product Info */}
@@ -283,17 +253,46 @@ export default function ProductCard({ product }: ProductCardProps) {
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-auto">
-          <div className="text-center sm:text-left">
-            <span className="text-base sm:text-lg font-bold text-gray-900">
+        {/* Price and Add to Cart Button */}
+        <div className="flex items-center justify-between gap-2 mt-auto">
+          <div className="text-left">
+            <span className="text-base font-bold text-gray-900">
               {formatPriceRange(priceRange.min, priceRange.max)}
             </span>
-            {hasMultiplePrices && product.type === "variable" && (
-              <p className="text-xs text-gray-500 mt-1">
-                {product.variants?.length} options available
-              </p>
-            )}
           </div>
+
+          <button
+            onClick={handleAddToCartClick}
+            disabled={!product.inStock}
+            className={`flex items-center justify-center w-10 h-10 rounded-lg group relative
+    ${
+      product.inStock
+        ? "hover:bg-green-400 text-green cursor-pointer pt-2 pr-1"
+        : "text-gray-400 cursor-not-allowed hover:bg-gray-400"
+    }`}
+            aria-label={product.inStock ? "Add to cart" : "Out of stock"}
+          >
+            {/* Cart with Plus */}
+            <div className="relative">
+              <ShoppingCart className="w-5 h-5 group-hover:text-white" />
+              <Plus className="w-4 h-4 absolute -top-2 -right-2 rounded-full p-0.5 bg-gray-800 text-white group-hover:bg-white group-hover:text-green-600" />
+            </div>
+
+            {/* Tooltip */}
+            <div
+              className="absolute -top-10 left-1/2 transform -translate-x-1/2 
+      opacity-0 group-hover:opacity-100 pointer-events-none 
+      transition-all duration-200 z-50"
+            >
+              <div className="bg-gray-900 text-white text-xs py-1 px-2 rounded whitespace-nowrap">
+                {product.inStock ? "Add to cart" : "Out of stock"}
+                <div
+                  className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1 
+          border-4 border-transparent border-t-gray-900"
+                ></div>
+              </div>
+            </div>
+          </button>
         </div>
 
         {/* Product Badges */}
@@ -310,7 +309,9 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
           {hasMultiplePrices && (
             <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-medium">
-              From ${priceRange.min.toFixed(2)}
+              {hasMultiplePrices && product.type === "variable" && (
+                <p>{product.variants?.length} options available</p>
+              )}
             </span>
           )}
         </div>

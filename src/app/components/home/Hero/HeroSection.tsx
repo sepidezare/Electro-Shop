@@ -51,7 +51,7 @@ export default function HeroSection() {
     {
       _id: "2",
       name: "Bluetooth Speaker",
-      description: "Portable Bluetooth speaker with excellent sound quality",
+      description: "Bluetooth speaker with excellent sound quality",
       discountPrice: 79.99,
       price: 99.99,
       image: "/images/home/product/pro2.png",
@@ -120,8 +120,8 @@ export default function HeroSection() {
 
   return (
     <section className="mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-8 font-jamjuree">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 h-auto lg:h-[600px]">
-        <div className="md:col-span-2 lg:col-span-6 xl:col-span-8 order-1 lg:order-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-10 gap-6 h-auto lg:h-[70vh]">
+        <div className="md:col-span-2 lg:col-span-4 xl:col-span-6 order-1 lg:order-2">
           <BannerCarousel banners={banners} />
         </div>
 

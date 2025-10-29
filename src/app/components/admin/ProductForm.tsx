@@ -2,11 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Product,
-  ProductVariant,
-  ProductSpecification,
-} from "../../types/product";
+import { Product, ProductVariant, ProductSpecification } from "@/types/product";
 import { useState, useRef, useEffect } from "react";
 
 interface ProductFormProps {

@@ -1,7 +1,7 @@
 //src/app/admin/products/edit/[id]/page.tsx
 import { notFound } from "next/navigation";
 import { Product } from "../../../../../types/product";
-import ProductForm from "../../../../../components/admin/ProductForm";
+import ProductForm from "@/app/components/admin/ProductForm";
 import clientPromise from "../../../../../lib/mongoDb";
 import { ObjectId } from "mongodb";
 

@@ -1,23 +1,24 @@
+//src/app/shop/page.tsx
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { CartItem } from "@/types/cart";
 import { Product } from "@/types/product";
 import { Category } from "@/types/category";
-import SortDropdown from "@/components/Shop/SortDropdown";
+import SortDropdown from "@/app/components/Shop/SortDropdown";
 import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 
 // Lazy load heavy components
 const ProductCardLazy = dynamic(
-  () => import("@/components/Products/ProductCard"),
+  () => import("@/app//components/Products/ProductCard"),
   {
     loading: () => <ProductCardSkeleton />,
   }
 );
 
 const FilterSidebarLazy = dynamic(
-  () => import("@/components/Shop/FilterSidebar"),
+  () => import("@/app/components/Shop/FilterSidebar"),
   {
     loading: () => <FilterSidebarSkeleton />,
   }
@@ -98,17 +99,8 @@ export default function ShopPage() {
       setError(null);
 
       const [productsResponse, categoriesResponse] = await Promise.all([
-        fetch("/api/public/products", {
-          // Add cache headers
-          headers: {
-            "Cache-Control": "public, max-age=300", // 5 minutes
-          },
-        }),
-        fetch("/api/public/categories", {
-          headers: {
-            "Cache-Control": "public, max-age=3600", // 1 hour
-          },
-        }),
+        fetch("/api/public/products"),
+        fetch("/api/public/categories"),
       ]);
 
       if (!productsResponse.ok || !categoriesResponse.ok) {
@@ -120,16 +112,25 @@ export default function ShopPage() {
         categoriesResponse.json(),
       ]);
 
-      setProducts(productsData);
+      // Handle both response formats for products
+      const productsArray = productsData.products || productsData;
+
+      if (!Array.isArray(productsArray)) {
+        throw new Error("Invalid products data format");
+      }
+
+      setProducts(productsArray);
       setCategories(categoriesData);
+
+      // Log first product to see its structure
+      if (productsArray.length > 0) {
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
-      console.error("Fetch error:", err);
     } finally {
       setLoading(false);
     }
   }, []);
-
   // Fetch products and categories
   useEffect(() => {
     fetchData();
@@ -200,7 +201,7 @@ export default function ShopPage() {
   // Memoized filter and sort logic
   const applyFiltersAndSorting = useCallback(
     (
-      products: Product[],
+      productsToFilter: Product[],
       selectedCategories: string[],
       priceRange: [number, number],
       inStockOnly: boolean,
@@ -209,12 +210,18 @@ export default function ShopPage() {
       sortBy: string,
       sortOrder: "asc" | "desc"
     ) => {
-      let result = [...products];
+      // Add safety check for products
+      if (!productsToFilter || !Array.isArray(productsToFilter)) {
+        console.warn("No products to filter");
+        return [];
+      }
+
+      let result = [...productsToFilter];
 
       // Category filter
       if (selectedCategories.length > 0) {
         result = result.filter((product) =>
-          product.categories.some((productCategory) =>
+          product.categories?.some((productCategory) =>
             selectedCategories.some(
               (selectedCategory) =>
                 productCategory.toLowerCase() === selectedCategory.toLowerCase()

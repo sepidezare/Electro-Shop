@@ -1,24 +1,22 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Category } from "@/types/category";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation"; // Add this import
+import { useRouter } from "next/navigation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+
+// Import Swiper styles
+import "swiper/css";
+import "swiper/css/navigation";
 
 export default function CategoryCarousel() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const router = useRouter(); // Initialize the router
-
-  const cardsToShow = {
-    mobile: 2,
-    tablet: 3,
-    desktop: 6,
-  };
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchCategories() {
@@ -40,24 +38,7 @@ export default function CategoryCarousel() {
   }, []);
 
   const handleCategoryClick = (categorySlug: string) => {
-    // Navigate to shop page with category parameter
     router.push(`/shop?category=${categorySlug}`);
-  };
-
-  const nextSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex >= categories.length - cardsToShow.desktop ? 0 : prevIndex + 1
-    );
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? categories.length - cardsToShow.desktop : prevIndex - 1
-    );
-  };
-
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
   };
 
   if (loading) {
@@ -90,64 +71,32 @@ export default function CategoryCarousel() {
   return (
     <section className="pb-5 px-4 bg-white">
       <div className="mx-auto">
-        {/* Carousel Container */}
         <div className="relative">
-          {/* Navigation Buttons */}
-          <button
-            onClick={prevSlide}
-            className="cursor-pointer absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300"
-            aria-label="Previous categories"
+          <Swiper
+            modules={[Navigation]}
+            navigation={{
+              nextEl: ".category-swiper-button-next",
+              prevEl: ".category-swiper-button-prev",
+            }}
+            spaceBetween={0}
+            slidesPerView={2}
+            breakpoints={{
+              640: {
+                slidesPerView: 3,
+                spaceBetween: 0,
+              },
+              1024: {
+                slidesPerView: 6,
+                spaceBetween: 0,
+              },
+            }}
+            className="category-swiper"
           >
-            <svg
-              className="w-6 h-6 text-gray-700"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-          </button>
-
-          <button
-            onClick={nextSlide}
-            className="cursor-pointer absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300"
-            aria-label="Next categories"
-          >
-            <svg
-              className="w-6 h-6 text-gray-700"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-          </button>
-
-          {/* Carousel */}
-          <div ref={carouselRef} className="overflow-hidden">
-            <div
-              className="flex transition-transform duration-500 ease-in-out gap-0"
-              style={{
-                transform: `translateX(-${
-                  currentIndex * (100 / cardsToShow.desktop)
-                }%)`,
-              }}
-            >
-              {categories.map((category) => (
+            {categories.map((category) => (
+              <SwiperSlide key={category.id}>
                 <button
-                  key={category.id}
                   onClick={() => handleCategoryClick(category.slug)}
-                  className="group flex-shrink-0 w-1/6 min-w-0 p-3 text-left cursor-pointer"
+                  className="group w-full p-3 text-left cursor-pointer"
                 >
                   <div className="flex flex-col items-center text-center hover:transform hover:scale-105 transition-all duration-300">
                     {/* Circular Card */}
@@ -170,7 +119,7 @@ export default function CategoryCarousel() {
                       )}
 
                       {/* Hover overlay */}
-                      <div className="absolute inset-0  group-hover:bg-opacity-10 transition-all duration-300 rounded-full" />
+                      <div className="absolute inset-0 group-hover:bg-opacity-10 transition-all duration-300 rounded-full" />
                     </div>
 
                     {/* Category Info */}
@@ -181,9 +130,48 @@ export default function CategoryCarousel() {
                     </div>
                   </div>
                 </button>
-              ))}
-            </div>
-          </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          {/* Custom Navigation Buttons */}
+          <button
+            className="category-swiper-button-prev cursor-pointer absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300"
+            aria-label="Previous categories"
+          >
+            <svg
+              className="w-6 h-6 text-gray-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+
+          <button
+            className="category-swiper-button-next cursor-pointer absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300"
+            aria-label="Next categories"
+          >
+            <svg
+              className="w-6 h-6 text-gray-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </section>
