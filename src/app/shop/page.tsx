@@ -617,7 +617,7 @@ export default function ShopPage() {
                   No products found
                 </h3>
                 <p className="text-gray-500 mb-4">
-                  Try adjusting your filters or search terms.
+                  Try adjusting your filters or search terms
                 </p>
                 <button
                   onClick={clearAllFilters}

@@ -1,4 +1,3 @@
-// app/api/admin/upload/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
@@ -8,7 +7,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    
+
     if (!file) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
     }
@@ -20,23 +19,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const timestamp = Date.now();
     const originalName = file.name;
     const extension = path.extname(originalName);
-    const filename = `category-${timestamp}${extension}`;
-    
-    // Create the category directory path
-    const categoryDir = path.join(process.cwd(), 'public', 'uploads', 'category');
-    
-    // Ensure the category directory exists
-    if (!existsSync(categoryDir)) {
-      await mkdir(categoryDir, { recursive: true });
+    const filename = `${timestamp}${extension}`;
+
+    // Save directly into /public/uploads
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    if (!existsSync(uploadDir)) {
+      await mkdir(uploadDir, { recursive: true });
     }
 
-    // Save to uploads/category directory
-    const filepath = path.join(categoryDir, filename);
-    
+    const filepath = path.join(uploadDir, filename);
     await writeFile(filepath, buffer);
 
-    // Return the public URL
-    const imageUrl = `/uploads/category/${filename}`;
+    // ✅ Public URL (no /category)
+    const imageUrl = `/uploads/${filename}`;
 
     return NextResponse.json({ url: imageUrl });
   } catch (error) {

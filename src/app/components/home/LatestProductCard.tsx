@@ -28,6 +28,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     slug: product.slug,
     name: product.name,
   });
+  console.log("Product image:", product.image);
 
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
