@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     await categoryService.initialize(); // Ensure categories are loaded
     
     const { searchParams } = new URL(request.url);
-    let category = searchParams.get('category');
+    const category = searchParams.get('category');
     const categories = searchParams.get('categories');
     const featured = searchParams.get('featured');
     const todayOffer = searchParams.get('todayOffer');
@@ -17,7 +17,8 @@ export async function GET(request: Request) {
     const inStock = searchParams.get('inStock');
     
     // Build filter object
-    const filter: any = {};
+    const filter: Record<string, unknown> = {};
+
     
     // Category filtering - convert name/slug to ID if needed
     if (category) {
