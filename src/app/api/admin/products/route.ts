@@ -136,12 +136,10 @@ export async function GET(request: Request) {
 
     return NextResponse.json(serializedProducts);
   } catch (error) {
-    console.error('Error fetching products:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch products' },
-      { status: 500 }
-    );
-  }
+  console.error('Error creating product:', error);
+  return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
+}
+
 }
 
 // POST - Create new product
@@ -407,12 +405,25 @@ async function saveUploadedFile(file: File): Promise<string> {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  const blob = await put(file.name, buffer, {
-    access: 'public',
-    contentType: file.type,
-  });
+  // If running on Vercel, use Blob storage
+  if (process.env.VERCEL === '1' || process.env.VERCEL_ENV) {
+    const blob = await put(file.name, buffer, {
+      access: 'public',
+      contentType: file.type,
+    });
+    return blob.url;
+  }
 
-  return blob.url; // returns a public URL
+  // Local file saving (for dev)
+  const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+  await mkdir(uploadDir, { recursive: true });
+  const timestamp = Date.now();
+  const ext = path.extname(file.name);
+  const safeName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9.-]/g, '_');
+  const fileName = `${timestamp}-${safeName}${ext}`;
+  const filePath = path.join(uploadDir, fileName);
+  await writeFile(filePath, buffer);
+  return `/uploads/${fileName}`;
 }
 
 
