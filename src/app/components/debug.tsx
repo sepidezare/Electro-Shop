@@ -1,4 +1,4 @@
-// pages/test-page.tsx or components/TestComponent.tsx
+// src/app/components/debug.tsx
 import { useState } from "react";
 
 export default function TestComponent() {
@@ -22,15 +22,23 @@ export default function TestComponent() {
   };
 
   return (
-    <div>
+    <div className="max-w-2xl">
       <button
         onClick={testConnection}
         disabled={loading}
-        className="bg-blue-500 text-white px-4 py-2 rounded"
+        className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 disabled:bg-gray-400"
       >
-        {loading ? "Testing..." : "Test MongoDB Connection"}
+        {loading ? "Adding Product..." : "Add Test Product to Database"}
       </button>
-      {result && <pre className="mt-4 p-4 bg-gray-100 rounded">{result}</pre>}
+
+      {result && (
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold mb-2">Result:</h3>
+          <pre className="p-4 bg-gray-100 rounded-lg border border-gray-300 whitespace-pre-wrap">
+            {result}
+          </pre>
+        </div>
+      )}
     </div>
   );
 }
