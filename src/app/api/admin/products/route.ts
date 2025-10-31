@@ -5,6 +5,7 @@ import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { Product, ProductVariant } from '../../../../types/product';
 import { put } from '@vercel/blob';
+
 // File upload configuration
 const UPLOAD_CONFIG = {
   MAX_FILE_SIZE: {
@@ -407,29 +408,40 @@ function validateFile(file: File, expectedType: 'image' | 'video'): string | nul
   }
   return null;
 }
-
-
-
 async function saveUploadedFile(file: File): Promise<string> {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  // If running on Vercel, use Blob storage
+  // Vercel environment
   if (process.env.VERCEL === '1' || process.env.VERCEL_ENV) {
-    const blob = await put(file.name, buffer, {
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      throw new Error('Vercel Blob: BLOB_READ_WRITE_TOKEN is not set!');
+    }
+
+    // Create a safe filename
+    const ext = path.extname(file.name);
+    const safeName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9.-]/g, '_');
+    const fileName = `products/${Date.now()}-${safeName}${ext}`;
+
+    const blob = await put(fileName, buffer, {
       access: 'public',
       contentType: file.type,
+      token: process.env.BLOB_READ_WRITE_TOKEN, // <-- Important
     });
-    return blob.url;
+
+    if (!blob?.url) {
+      throw new Error('Vercel Blob: Failed to upload file');
+    }
+
+    return blob.url; // ✅ full public URL
   }
 
-  // Local file saving (for dev)
+  // Local file saving (dev)
   const uploadDir = path.join(process.cwd(), 'public', 'uploads');
   await mkdir(uploadDir, { recursive: true });
-  const timestamp = Date.now();
   const ext = path.extname(file.name);
   const safeName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9.-]/g, '_');
-  const fileName = `${timestamp}-${safeName}${ext}`;
+  const fileName = `${Date.now()}-${safeName}${ext}`;
   const filePath = path.join(uploadDir, fileName);
   await writeFile(filePath, buffer);
   return `/uploads/${fileName}`;

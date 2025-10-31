@@ -33,19 +33,11 @@ export default function ProductCarouselBanner() {
     async function fetchData() {
       try {
         setLoading(true);
-        console.log("🔄 Starting data fetch...");
-
         // Fetch products and categories in parallel
         const [productsResponse, categoriesResponse] = await Promise.all([
           fetch("/api/public/products"),
           fetch("/api/public/categories"),
         ]);
-
-        console.log("📦 Products response status:", productsResponse.status);
-        console.log(
-          "📦 Categories response status:",
-          categoriesResponse.status
-        );
 
         if (!productsResponse.ok) {
           throw new Error(
@@ -60,39 +52,19 @@ export default function ProductCarouselBanner() {
 
         const productsData = await productsResponse.json();
         const categoriesData = await categoriesResponse.json();
-
-        console.log("📊 Raw products data:", productsData);
-        console.log("📊 Raw categories data:", categoriesData);
-
         // EXTRACT PRODUCTS FROM THE RESPONSE OBJECT
         let productsArray: Product[] = [];
 
         if (productsData && Array.isArray(productsData.products)) {
-          console.log("✅ Products data has products array");
           productsArray = productsData.products;
         } else if (Array.isArray(productsData)) {
-          console.log("✅ Products data is direct array");
           productsArray = productsData;
         } else {
-          console.warn("❌ Unexpected products response format:", productsData);
           productsArray = [];
         }
-
-        console.log("🎯 Final products array:", productsArray);
-        console.log("🎯 Products count:", productsArray.length);
-
-        if (productsArray.length > 0) {
-          console.log("📝 First product sample:", {
-            id: productsArray[0]._id,
-            name: productsArray[0].name,
-            categories: productsArray[0].categories,
-          });
-        }
-
         setProducts(productsArray);
         setCategories(categoriesData);
       } catch (err) {
-        console.error("💥 Fetch error:", err);
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);
@@ -106,7 +78,6 @@ export default function ProductCarouselBanner() {
   const flattenCategories = (categoryTree: Category[]): Category[] => {
     // SAFE: Check if categoryTree is an array
     if (!Array.isArray(categoryTree)) {
-      console.warn("categoryTree is not an array:", categoryTree);
       return [];
     }
 
@@ -141,30 +112,15 @@ export default function ProductCarouselBanner() {
     }
     return acc;
   }, {} as Record<string, string>);
-
-  console.log("All flattened categories:", allCategoriesFlat);
-  console.log("Category map:", categoryMap);
-
   // SAFELY Get unique category IDs from products
   const allCategoryIds = (Array.isArray(products) ? products : []).flatMap(
     (product) => product?.categories || []
   );
   const uniqueCategoryIds = Array.from(new Set(allCategoryIds)).filter(Boolean);
-
-  console.log("All category IDs from products:", allCategoryIds);
-  console.log("Unique category IDs:", uniqueCategoryIds);
-
   // Debug: Check which category IDs from products exist in our category map
   const missingCategoryIds = uniqueCategoryIds.filter(
     (categoryId) => !categoryMap[categoryId]
   );
-  if (missingCategoryIds.length > 0) {
-    console.warn(
-      "Category IDs found in products but not in categories API:",
-      missingCategoryIds
-    );
-  }
-
   // Create category options with both ID and name
   const categoryOptions = uniqueCategoryIds
     .map((categoryId) => {
@@ -175,8 +131,6 @@ export default function ProductCarouselBanner() {
       };
     })
     .filter((category) => !category.name.startsWith("Unknown Category")); // Only show categories we can identify
-
-  console.log("Final category options:", categoryOptions);
 
   // Check if filter buttons are wrapping to multiple lines
   useEffect(() => {
@@ -199,13 +153,6 @@ export default function ProductCarouselBanner() {
             break;
           }
         }
-
-        console.log("Wrapping check:", {
-          hasWrapping,
-          buttonCount: buttons.length,
-          firstButtonTop: firstButtonTop,
-        });
-
         setShowFilterCarousel(hasWrapping);
       }
     };
@@ -237,10 +184,6 @@ export default function ProductCarouselBanner() {
         );
 
   const featuredProducts = filteredProducts;
-
-  console.log("Filtered products count:", filteredProducts.length);
-  console.log("Selected category:", selectedCategory);
-
   // If no categories are found, don't show the filter section
   const showCategoryFilter = categoryOptions.length > 0;
 

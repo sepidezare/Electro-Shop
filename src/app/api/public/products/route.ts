@@ -25,7 +25,6 @@ export async function GET(request: Request) {
       const foundCategory = categoryService.findCategory(category);
       if (foundCategory) {
         filter.categories = foundCategory._id;
-        console.log(`Found category: ${foundCategory.name} -> ${foundCategory._id}`);
       } else {
         // If no category found, use the original value (might be an ID)
         filter.categories = category;
@@ -79,7 +78,6 @@ export async function GET(request: Request) {
       }
     });
   } catch (error) {
-    console.error('Error fetching products:', error);
     return NextResponse.json(
       { error: 'Failed to fetch products' },
       { status: 500 }
