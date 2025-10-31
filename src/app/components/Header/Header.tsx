@@ -7,7 +7,7 @@ import CartHeader from "../cart/HeaderCart";
 
 export default function Header() {
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 py-4 relative">
+    <header className="bg-white shadow-sm border-b border-gray-200 py-4 relative z-50">
       <div className="container mx-auto px-4">
         {/* Desktop: flex-row, Mobile: flex-col */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-8">
