@@ -1,44 +1,26 @@
-import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongoDb';
+import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function POST(): Promise<NextResponse> {
   try {
     const client = await clientPromise;
-    const db = client.db(); 
+    const db = client.db('test-db'); // Replace with your DB name
     
-    // Get all unique categories
-    const categories = await db
-      .collection('products')
-      .distinct('category');
-    
-    // Also check if category is in a different field
-    const categoryNames = await db
-      .collection('products')
-      .distinct('category.name');
-    
-    // Get sample products to see their structure
-    const sampleProducts = await db
-      .collection('products')
-      .find({})
-      .project({ name: 1, category: 1, productCategory: 1, type: 1 })
-      .limit(10)
-      .toArray();
+    const result = await db.collection('test-collection').insertOne({
+      message: 'Hello from Vercel!',
+      timestamp: new Date(),
+      randomId: Math.random().toString(36).substring(7)
+    });
 
-    return NextResponse.json({
-      availableCategories: categories,
-      categoryNames: categoryNames,
-      sampleProducts: sampleProducts.map(p => ({
-        name: p.name,
-        category: p.category,
-        productCategory: p.productCategory,
-        type: p.type,
-        _id: p._id.toString()
-      }))
+    return NextResponse.json({ 
+      success: true, 
+      insertedId: result.insertedId,
+      message: 'Data added successfully!' 
     });
   } catch (error) {
-    console.error('Error debugging categories:', error);
+    console.error('MongoDB error:', error);
     return NextResponse.json(
-      { error: 'Failed to debug categories' },
+      { success: false, error: (error as Error).message },
       { status: 500 }
     );
   }
