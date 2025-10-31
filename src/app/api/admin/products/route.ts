@@ -137,8 +137,16 @@ export async function GET(request: Request) {
     return NextResponse.json(serializedProducts);
   } catch (error) {
   console.error('Error creating product:', error);
-  return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
+
+  return NextResponse.json(
+    {
+      error: error instanceof Error ? error.message : JSON.stringify(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    },
+    { status: 500 }
+  );
 }
+
 
 }
 
