@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { Product, ProductVariant } from '../../../../types/product';
+import { put } from '@vercel/blob';
 
 // File upload configuration
 const UPLOAD_CONFIG = {
@@ -402,23 +403,10 @@ function validateFile(file: File, expectedType: 'image' | 'video'): string | nul
 }
 
 async function saveUploadedFile(file: File): Promise<string> {
-  const bytes = await file.arrayBuffer();
-  const buffer = Buffer.from(bytes);
-  const timestamp = Date.now();
-  const fileExtension = path.extname(file.name).toLowerCase();
-  const originalName = path.basename(file.name, fileExtension).replace(/[^a-zA-Z0-9.-]/g, '_');
-  const fileName = `${timestamp}-${originalName}${fileExtension}`;
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-  const filePath = path.join(uploadDir, fileName);
-  try {
-    await mkdir(uploadDir, { recursive: true });
-  } catch (error: unknown) {
-    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
-      throw error;
-    }
-  }
-  await writeFile(filePath, buffer);
-  return `/uploads/${fileName}`;
+  const blob = await put(file.name, file, {
+    access: 'public',
+  });
+  return blob.url;
 }
 
 function generateSlug(name: string): string {
