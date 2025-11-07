@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongoDb';
 import { ObjectId } from 'mongodb';
-import { writeFile, mkdir, unlink } from 'fs/promises';
+import { put } from '@vercel/blob';
 import path from 'path';
 import { Product, ProductVariant } from '../../../../../types/product';
 
@@ -168,221 +168,6 @@ export async function GET(
   }
 }
 
-// POST - Create new product
-export async function POST(request: Request) {
-  try {
-    const client = await clientPromise;
-    const db = client.db();
-
-    const formData = await request.formData();
-
-    // Extract form fields
-    const name = formData.get('name') as string;
-    const description = formData.get('description') as string;
-    const price = parseFloat(formData.get('price') as string);
-    const discountPrice = parseFloat(formData.get('discountPrice') as string) || 0;
-    const categoriesJson = formData.get('categories') as string;
-    const inStock = formData.get('inStock') === 'true';
-    const rating = parseFloat(formData.get('rating') as string) || 0;
-    const categories = categoriesJson ? JSON.parse(categoriesJson) : [];
-    const rawType = formData.get('type') as string;
-    const type: 'simple' | 'variable' = rawType === 'variable' ? 'variable' : 'simple';
-    const sku = formData.get('sku') as string || '';
-    const brand = formData.get('brand') as string || '';
-    const stockQuantity = parseInt(formData.get('stockQuantity') as string) || 0;
-    const weight = parseFloat(formData.get('weight') as string) || 0;
-    const dimensionsJson = formData.get('dimensions') as string;
-    const shippingClass = formData.get('shippingClass') as string || '';
-    const hasGuarantee = formData.get('hasGuarantee') === 'true';
-    const hasReferal = formData.get('hasReferal') === 'true';
-    const hasChange = formData.get('hasChange') === 'true';
-    const seoTitle = formData.get('seoTitle') as string || '';
-    const seoDescription = formData.get('seoDescription') as string || '';
-    const attributesJson = formData.get('attributes') as string;
-    const specificationsJson = formData.get('specifications') as string;
-    const variantsJson = formData.get('variants') as string;
-    const todayOffer = formData.get('todayOffer') === 'true';
-    const featuredProduct = formData.get('FeaturedProduct') === 'true';
-
-    const dimensions = dimensionsJson
-      ? JSON.parse(dimensionsJson)
-      : { width: 0, height: 0, depth: 0 };
-    const attributes = attributesJson ? JSON.parse(attributesJson) : [];
-    const specifications = specificationsJson ? JSON.parse(specificationsJson) : [];
-    let variants = variantsJson ? JSON.parse(variantsJson) : [];
-
-    // Validate required fields
-    if (!name || !description || categories.length === 0) {
-      return NextResponse.json(
-        { error: 'Name, description, and at least one category are required' },
-        { status: 400 }
-      );
-    }
-
-    // Validate all categories exist
-    for (const categoryId of categories) {
-      if (!ObjectId.isValid(categoryId)) {
-        return NextResponse.json({ error: `Invalid category ID: ${categoryId}` }, { status: 400 });
-      }
-      const categoryExists = await db.collection('categories').findOne({
-        _id: new ObjectId(categoryId),
-      });
-      if (!categoryExists) {
-        return NextResponse.json({ error: `Category not found: ${categoryId}` }, { status: 400 });
-      }
-    }
-
-    // Validate attributes
-    if (!validateAttributes(attributes)) {
-      return NextResponse.json({ error: 'Invalid attributes format' }, { status: 400 });
-    }
-
-    // Validate variations for variable products
-    if (type === 'variable') {
-      if (!variants || variants.length === 0) {
-        return NextResponse.json(
-          { error: 'Variable products must have at least one variation' },
-          { status: 400 }
-        );
-      }
-      if (!validateVariantAttributes(variants, attributes)) {
-        return NextResponse.json({ error: 'Invalid variant attributes format' }, { status: 400 });
-      }
-      
-      // Process variant images
-      variants = await Promise.all(
-        variants.map(async (variant: unknown, index: number) => {
-          const v = variant as ProductVariant;
-          const variantImageFile = formData.get(`variantImage-${index}`) as File;
-          let variantImageUrl = v.image;
-
-          if (variantImageFile && variantImageFile.size > 0) {
-            const validationError = validateFile(variantImageFile, 'image');
-            if (validationError) {
-              console.error(`Variant ${index} image validation error:`, validationError);
-            } else {
-              variantImageUrl = await saveUploadedFile(variantImageFile);
-            }
-          }
-
-          return {
-            ...v,
-            _id: new ObjectId().toString(),
-            image: variantImageUrl,
-          };
-        })
-      );
-    } else {
-      variants = [];
-    }
-
-    // Validate discount price
-    if (discountPrice > price) {
-      return NextResponse.json(
-        { error: 'Discount price cannot be greater than regular price' },
-        { status: 400 }
-      );
-    }
-
-    // Handle main image
-    let mainImageUrl = formData.get('imageUrl') as string;
-    const mainImageFile = formData.get('mainImage') as File;
-
-    if (mainImageFile && mainImageFile.size > 0) {
-      const validationError = validateFile(mainImageFile, 'image');
-      if (validationError) {
-        return NextResponse.json({ error: `Main image: ${validationError}` }, { status: 400 });
-      }
-      mainImageUrl = await saveUploadedFile(mainImageFile);
-    }
-
-    if (!mainImageUrl) {
-      return NextResponse.json({ error: 'Main image is required' }, { status: 400 });
-    }
-
-    // Handle additional media files
-    const mediaFiles = formData.getAll('mediaFiles') as File[];
-    const additionalMedia: Array<{
-      url: string;
-      type: 'image' | 'video';
-      name?: string;
-      size?: number;
-      mimeType?: string;
-    }> = [];
-
-    for (const mediaFile of mediaFiles) {
-      if (mediaFile && mediaFile.size > 0) {
-        const fileType = mediaFile.type.startsWith('image/') ? 'image' : mediaFile.type.startsWith('video/') ? 'video' : null;
-        if (!fileType) {
-          continue;
-        }
-        const validationError = validateFile(mediaFile, fileType);
-        if (validationError) {
-          continue;
-        }
-        const mediaUrl = await saveUploadedFile(mediaFile);
-        additionalMedia.push({
-          url: mediaUrl,
-          type: fileType,
-          name: mediaFile.name,
-          size: mediaFile.size,
-          mimeType: mediaFile.type,
-        });
-      }
-    }
-
-    // Generate slug from name
-    const slug = generateSlug(name);
-
-    // Create product in database
-    const productData: Omit<Product, '_id'> = {
-      name,
-      description,
-      price,
-      discountPrice,
-      categories,
-      image: mainImageUrl,
-      inStock,
-      rating,
-      additionalMedia,
-      type,
-      sku,
-      brand,
-      stockQuantity,
-      weight,
-      dimensions,
-      shippingClass,
-      hasGuarantee,
-      hasReferal,
-      hasChange,
-      seoTitle,
-      seoDescription,
-      attributes,
-      specifications,
-      variants,
-      todayOffer,
-      featuredProduct,
-      slug,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-
-    const result = await db.collection('products').insertOne(productData);
-    return NextResponse.json({
-      success: true,
-      insertedId: result.insertedId.toString(),
-      product: {
-        ...productData,
-        _id: result.insertedId.toString(),
-      },
-      message: 'Product created successfully',
-    });
-  } catch (error) {
-    console.error('Error creating product:', error);
-    return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
-  }
-}
-
 // PUT - Update product with file uploads and category validation
 export async function PUT(
   request: Request,
@@ -407,7 +192,7 @@ export async function PUT(
     
     const formData = await request.formData();
 
-    // Extract form fields (same as before)
+    // Extract form fields
     const name = formData.get('name') as string;
     const description = formData.get('description') as string;
     const price = parseFloat(formData.get('price') as string);
@@ -548,8 +333,6 @@ export async function PUT(
       additionalMedia = additionalMedia.filter(
         (existingMedia) => !mediaToRemove.some((mediaToRemove) => mediaToRemove.url === existingMedia.url)
       );
-      // Note: In Vercel Blob, you might want to actually delete the blobs
-      // await deleteBlobFiles(mediaToRemove);
     }
 
     // Add new media files
@@ -657,10 +440,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    // Note: In production with Vercel Blob, you might want to implement
-    // actual blob deletion here using the Vercel Blob API
-    // For now, we'll just delete the database record
-
     const result = await db.collection('products').deleteOne({
       _id: new ObjectId(id),
     });
@@ -726,35 +505,45 @@ function validateFile(file: File, expectedType: 'image' | 'video'): string | nul
   return null;
 }
 
+// Use the same saveUploadedFile function that uses Vercel Blob
 async function saveUploadedFile(file: File): Promise<string> {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
-  const timestamp = Date.now();
-  const fileExtension = path.extname(file.name).toLowerCase();
-  const originalName = path.basename(file.name, fileExtension).replace(/[^a-zA-Z0-9.-]/g, '_');
-  const fileName = `${timestamp}-${originalName}${fileExtension}`;
-  const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-  const filePath = path.join(uploadDir, fileName);
-  try {
-    await mkdir(uploadDir, { recursive: true });
-  } catch (error: unknown) {
-    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') {
-      throw error;
+
+  // Vercel environment
+  if (process.env.VERCEL === '1' || process.env.VERCEL_ENV) {
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      throw new Error('Vercel Blob: BLOB_READ_WRITE_TOKEN is not set!');
     }
+
+    // Create a safe filename
+    const ext = path.extname(file.name);
+    const safeName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9.-]/g, '_');
+    const fileName = `products/${Date.now()}-${safeName}${ext}`;
+
+    const blob = await put(fileName, buffer, {
+      access: 'public',
+      contentType: file.type,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    });
+
+    if (!blob?.url) {
+      throw new Error('Vercel Blob: Failed to upload file');
+    }
+
+    return blob.url; // ✅ full public URL
   }
+
+  // Local file saving (dev) - This will still fail on Vercel but work locally
+  const { writeFile, mkdir } = await import('fs/promises');
+  const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+  await mkdir(uploadDir, { recursive: true });
+  const ext = path.extname(file.name);
+  const safeName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9.-]/g, '_');
+  const fileName = `${Date.now()}-${safeName}${ext}`;
+  const filePath = path.join(uploadDir, fileName);
   await writeFile(filePath, buffer);
   return `/uploads/${fileName}`;
-}
-
-async function deleteFile(fileUrl: string): Promise<void> {
-  try {
-    const fileName = fileUrl.split('/').pop();
-    if (!fileName) return;
-    const filePath = path.join(process.cwd(), 'public', 'uploads', fileName);
-    await unlink(filePath);
-  } catch (error) {
-    // Silent fail for file deletion errors
-  }
 }
 
 function generateSlug(name: string): string {
