@@ -21,20 +21,9 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const priceRange = getProductPriceRange(product);
   const hasMultiplePrices = priceRange.min !== priceRange.max;
-
-  // Log product data for debugging
-  console.log("ProductCard product:", {
-    id: product._id,
-    slug: product.slug,
-    name: product.name,
-  });
-  console.log("Product image:", product.image);
-
   const handleWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log("Add to wishlist:", product._id);
-    // Add your wishlist logic here
   };
 
   const handleQuickView = (e: React.MouseEvent) => {

@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { Product } from "../../../types/product";
 import ProductsTable from "@/app/components/admin/ProductsTable";
 import clientPromise from "../../../lib/mongoDb";
